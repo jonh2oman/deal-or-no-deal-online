@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gander Festival of Flight - Deal or No Deal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Confetti Overlay Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container" id="app">
+    <!-- Header Navigation -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="flight-badge">
+          <span class="badge-code" id="brand-tag-code">DND-15</span>
+          <span class="badge-icon">✈️</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">DEAL OR NO DEAL</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Stage Control Panel</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool" title="Change Stage Theme">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+        </select>
+
+        <select id="ambient-select" class="tool-btn select-tool" title="Ambient Stage Soundscape">
+          <option value="none">🔇 Ambient OFF</option>
+          <option value="flight-hum">✈️ Jet Cabin Hum</option>
+          <option value="radar-pulse">📡 Radar Pulse</option>
+        </select>
+
+        <button id="peek-toggle-btn" class="tool-btn peek-highlight" title="Toggle Host Secret X-Ray Case Peek Mode">
+          <span class="btn-icon" id="peek-icon">👁️</span> <span class="btn-text" id="peek-text">Host Peek OFF</span>
+        </button>
+        <button id="spectator-btn" class="tool-btn" title="Toggle Big Screen Spectator Mode">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn" title="Toggle Audio">
+          <span class="btn-icon" id="sound-icon">🔊</span> <span class="btn-text" id="sound-text">Sound ON</span>
+        </button>
+        <button id="admin-btn" class="tool-btn admin-highlight" title="Prize Setup & Admin">
+          <span class="btn-icon">⚙️</span> <span class="btn-text">Prize Setup</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light" title="Reset Current Round">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Round</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Host Soundboard Control Panel Console -->
+    <div class="soundboard-console">
+      <span class="console-label">🎙️ SOUNDBOARD CONSOLE:</span>
+      <div class="soundboard-buttons">
+        <button class="sound-fx-btn" data-sound="open">🎵 Reveal</button>
+        <button class="sound-fx-btn" data-sound="ring">📞 Ring</button>
+        <button class="sound-fx-btn" data-sound="banker">📡 Tension</button>
+        <button class="sound-fx-btn" data-sound="deal">🤝 Deal</button>
+        <button class="sound-fx-btn" data-sound="noDeal">🚫 No Deal</button>
+        <button class="sound-fx-btn" data-sound="win">🏆 Fanfare</button>
+        <button class="sound-fx-btn" data-sound="theme">🎺 Theme</button>
+        <button class="sound-fx-btn danger-sound" data-sound="stop">🛑 Silence</button>
+      </div>
+    </div>
+
+    <!-- Main Game Board Container -->
+    <main class="game-stage">
+      <!-- Left Column: Low Value Prize Board (Cases 1-8) -->
+      <aside class="prize-column low-prizes" id="low-prize-board">
+        <div class="column-header">LOW VALUES</div>
+        <div class="prize-list" id="low-prizes-list">
+          <!-- Populated by JavaScript -->
+        </div>
+      </aside>
+
+      <!-- Center Stage: Flight Deck & Briefcases -->
+      <section class="flight-deck">
+        <!-- Status & Command Teleprompter Banner -->
+        <div class="status-banner host-teleprompter" id="status-banner">
+          <div class="status-radar-icon"></div>
+          <div class="status-content">
+            <div class="teleprompter-badge">🎙️ HOST STAGE TELEPROMPTER & BANTER</div>
+            <h2 id="status-heading">WELCOME TO GANDER DEAL OR NO DEAL</h2>
+            <p id="status-subtext">Click any briefcase to select your personal case to keep until the end!</p>
+            <div class="host-banter-quote" id="host-banter-quote">"Fasten your seatbelts folks, we're in for a high-flying game today!"</div>
+          </div>
+        </div>
+
+        <!-- Briefcase Grid (15 Cases) -->
+        <div class="briefcase-grid" id="briefcase-grid">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- Right Column: High Value Prize Board (Cases 9-15) & Sealed Case Podium -->
+      <aside class="prize-column high-prizes" id="high-prize-board">
+        <div class="column-header">HIGH VALUES</div>
+        <div class="prize-list" id="high-prizes-list">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Flight Deck Footer: Player's Case Podium -->
+        <div class="player-podium" id="player-podium">
+          <div class="podium-glass">
+            <span class="podium-label">SEALED CASE</span>
+            <div class="podium-case-slot" id="player-case-slot">
+              <span class="empty-slot-text">No Case Chosen</span>
+            </div>
+            <div class="podium-status" id="round-indicator">ROUND 1</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+  </div>
+
+  <!-- MODAL 0: Case Reveal Modal (Staging Step) -->
+  <div class="modal-overlay hidden" id="case-reveal-modal">
+    <div class="modal-glass reveal-modal-content">
+      <div class="reveal-header center-text">
+        <span class="call-badge" id="reveal-case-badge">BRIEFCASE REVEALED</span>
+        <h2 id="reveal-case-title">CASE #--</h2>
+      </div>
+
+      <div class="reveal-prize-box" id="reveal-prize-box">
+        <span class="reveal-prize-label">REVEALED PRIZE VALUE</span>
+        <div class="reveal-prize-value" id="reveal-prize-value">---</div>
+        <p class="reveal-status-note" id="reveal-status-note">Eliminated from the stage board!</p>
+      </div>
+
+      <div class="reveal-actions">
+        <button id="continue-reveal-btn" class="btn btn-primary btn-large btn-glow-active" style="width: 100%;">
+          <span id="continue-btn-text">CONTINUE GAME ✈️</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 1: Admin / Event Settings & Prize Setup Modal -->
+  <div class="modal-overlay hidden" id="admin-modal">
+    <div class="modal-glass admin-modal-content">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2>⚙️ Event Settings & Prize Setup</h2>
+          <p>Customize your event branding, titles, and 15 game prizes.</p>
+        </div>
+        <button class="close-modal-btn" id="close-admin-btn">&times;</button>
+      </div>
+
+      <!-- Settings Navigation Tabs -->
+      <div class="settings-nav-tabs">
+        <button id="tab-branding-btn" class="settings-tab-btn active" type="button">
+          <span>🏷️ Event Branding</span>
+        </button>
+        <button id="tab-prizes-btn" class="settings-tab-btn" type="button">
+          <span>🎁 15 Game Prizes</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Tab Section 1: Event Branding -->
+        <div id="section-branding" class="settings-tab-section">
+          <div class="branding-inputs-grid">
+            <div class="input-group">
+              <label>Main Event / App Title:</label>
+              <input type="text" id="setting-event-title" class="input-field" placeholder="e.g. DEAL OR NO DEAL STAGE SHOW">
+            </div>
+            <div class="input-group">
+              <label>Sub-Title / Location:</label>
+              <input type="text" id="setting-event-subtitle" class="input-field" placeholder="e.g. LIVE FESTIVAL STAGE GAME">
+            </div>
+            <div class="input-group">
+              <label>Event Tag / Code (e.g. DND-15):</label>
+              <input type="text" id="setting-event-tag" class="input-field" placeholder="e.g. DND-15">
+            </div>
+            <div class="input-group">
+              <label>Banker / Host Call Title:</label>
+              <input type="text" id="setting-banker-name" class="input-field" placeholder="e.g. FLIGHT CONTROL or THE BANKER">
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Section 2: 15 Game Prizes -->
+        <div id="section-prizes" class="settings-tab-section hidden">
+          <div class="admin-actions-bar">
+            <button id="reset-default-prizes-btn" class="btn btn-secondary" type="button">
+              <span>🔄</span> Reset Default Prizes
+            </button>
+            <span class="prizes-count-tag">15 Total Prizes</span>
+          </div>
+
+          <form id="prize-form" class="prize-inputs-grid">
+            <!-- 15 Input Fields generated dynamically -->
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="save-prizes-btn" class="btn btn-primary btn-large" type="button">
+          <span>💾</span> Save Settings & Update Game
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Flight Controller / Banker Call Modal -->
+  <div class="modal-overlay hidden" id="banker-modal">
+    <div class="modal-glass banker-modal-content">
+      <div class="radar-scan-wrapper">
+        <div class="radar-circle pulse-ring"></div>
+        <div class="radar-sweep"></div>
+        <div class="tower-icon">📡</div>
+      </div>
+
+      <div class="banker-header">
+        <span class="call-badge" id="offer-type-badge">INCOMING TRANSMISSION</span>
+        <h2 id="banker-title-heading">FLIGHT CONTROL CALLING...</h2>
+        <p class="banker-sub">Choose to present the suggested offer or customize a Host Offer!</p>
+      </div>
+
+      <!-- Host Offer Mode Selector Tabs -->
+      <div class="offer-mode-tabs">
+        <button id="tab-suggested-btn" class="offer-tab-btn active" type="button">
+          <span>🤖 Suggested Offer</span>
+        </button>
+        <button id="tab-custom-btn" class="offer-tab-btn" type="button">
+          <span>🎙️ Custom Host Offer</span>
+        </button>
+      </div>
+
+      <!-- Custom Host Offer Form -->
+      <div id="custom-offer-box" class="custom-offer-box hidden">
+        <div class="custom-inputs-row">
+          <div class="input-group">
+            <label>Custom Cash Amount ($):</label>
+            <input type="number" step="1" id="custom-offer-amount" class="input-field" placeholder="e.g. 25">
+          </div>
+          <div class="input-group">
+            <label>Physical Prize / Bonus (Optional):</label>
+            <input type="text" id="custom-offer-prize" class="input-field" placeholder="e.g. Lawn Chair + Hoodie">
+          </div>
+        </div>
+        <button id="apply-custom-offer-btn" class="btn btn-secondary btn-small" type="button" style="margin-top: 10px; width: 100%;">
+          <span>✔️</span> Apply Host Offer
+        </button>
+      </div>
+
+      <!-- Active Offer Presentation Card -->
+      <div class="banker-offer-card" id="banker-offer-card">
+        <span class="offer-label" id="offer-label-heading">BANKER OFFER</span>
+        <div class="offer-amount" id="banker-offer-display">$0</div>
+        <div class="offer-physical-prize hidden" id="banker-physical-display"></div>
+        <div class="offer-ev-meta" id="banker-ev-meta">Expected Value: $0</div>
+      </div>
+
+      <!-- Stage Broadcast Push Action -->
+      <div class="broadcast-action-wrapper" style="width: 100%; margin: 4px 0 12px 0;">
+        <button id="broadcast-offer-btn" class="btn btn-primary btn-large btn-glow-active" type="button" style="width: 100%;">
+          <span>📡 PUSH OFFER TO SPECTATOR SCREEN</span>
+        </button>
+        <div id="broadcast-live-tag" class="broadcast-live-tag hidden">✔️ OFFER LIVE ON SPECTATOR STAGE</div>
+      </div>
+
+      <div class="banker-decision-actions">
+        <button id="deal-btn" class="btn btn-deal">
+          <span class="btn-glow"></span>
+          <span class="deal-text">DEAL</span>
+          <span class="deal-sub">ACCEPT OFFER</span>
+        </button>
+        <button id="no-deal-btn" class="btn btn-nodeal">
+          <span class="btn-glow"></span>
+          <span class="deal-text">NO DEAL</span>
+          <span class="deal-sub">KEEP PLAYING</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Swap or Keep Modal (Final 2 Cases) -->
+  <div class="modal-overlay hidden" id="swap-modal">
+    <div class="modal-glass swap-modal-content">
+      <div class="modal-header center-text">
+        <span class="call-badge gold-badge">FINAL DECISION</span>
+        <h2>THE FINAL FLIGHT CHOICE!</h2>
+        <p>Only two cases remain sealed: Your original case and the last remaining case.</p>
+      </div>
+
+      <div class="swap-cases-comparison">
+        <div class="comparison-card" id="swap-player-case-card">
+          <span class="card-tag">YOUR SEALED CASE</span>
+          <div class="case-num-large" id="swap-player-case-num">#--</div>
+        </div>
+
+        <div class="versus-divider">VS</div>
+
+        <div class="comparison-card" id="swap-other-case-card">
+          <span class="card-tag">OTHER REMAINING CASE</span>
+          <div class="case-num-large" id="swap-other-case-num">#--</div>
+        </div>
+      </div>
+
+      <div class="swap-actions">
+        <button id="keep-case-btn" class="btn btn-primary btn-large">
+          <span>🔒</span> KEEP YOUR CASE
+        </button>
+        <button id="swap-case-btn" class="btn btn-accent btn-large">
+          <span>🔄</span> SWAP CASES
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Game Over / Victory Reveal Modal -->
+  <div class="modal-overlay hidden" id="result-modal">
+    <div class="modal-glass result-modal-content">
+      <div class="result-icon-burst" id="result-icon">🏆</div>
+      <h2 id="result-title">CONGRATULATIONS!</h2>
+      <p id="result-subtitle">You have won your prize at the Festival of Flight!</p>
+
+      <div class="result-prize-box">
+        <span class="result-prize-label" id="result-prize-label">TOTAL PRIZE WON</span>
+        <div class="result-prize-value" id="result-prize-value">$0</div>
+        <div class="result-case-info" id="result-case-info">Inside your case was: ---</div>
+      </div>
+
+      <div class="result-actions">
+        <button id="play-again-btn" class="btn btn-primary btn-large btn-glow-active">
+          <span>✈️</span> PLAY AGAIN / NEXT CONTESTANT
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
+  <script src="banker.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -279,6 +279,7 @@ class GameController {
       themeSelect: document.getElementById('theme-select'),
       ambientSelect: document.getElementById('ambient-select'),
       spectatorBtn: document.getElementById('spectator-btn'),
+      resetBuzzersBtn: document.getElementById('reset-buzzers-btn'),
       resetBtn: document.getElementById('reset-btn')
     };
 
@@ -356,7 +357,7 @@ class GameController {
           const sound = btn.dataset.sound;
           if (sound === 'stop') {
             sounds.stopAll();
-            if (this.broadcast) this.broadcast.postMessage({ type: 'PLAY_SOUND', sound: 'stopRing' });
+            if (this.broadcast) this.broadcast.postMessage({ type: 'PLAY_SOUND', sound: 'stop' });
           } else {
             if (sound === 'open') sounds.playOpen();
             else if (sound === 'ring') sounds.startRing();
@@ -464,6 +465,11 @@ class GameController {
     const qrModal = document.getElementById('qr-modal');
     const closeQrBtn = document.getElementById('close-qr-btn');
     const resetBuzzersBtn = document.getElementById('reset-buzzers-btn');
+    if (this.elements.resetBuzzersBtn) {
+      this.elements.resetBuzzersBtn.addEventListener('click', () => {
+        if (typeof mobilePeerManager !== 'undefined') mobilePeerManager.resetBuzzers();
+      });
+    }
 
     if (qrBtn && qrModal) {
       qrBtn.addEventListener('click', () => {
@@ -474,19 +480,6 @@ class GameController {
 
     if (closeQrBtn && qrModal) {
       closeQrBtn.addEventListener('click', () => qrModal.classList.add('hidden'));
-    }
-
-    // Sound FX Dropdown Toggle
-    const soundFxMenuBtn = document.getElementById('sound-fx-menu-btn');
-    const soundFxDropdown = document.getElementById('sound-fx-dropdown');
-    if (soundFxMenuBtn && soundFxDropdown) {
-      soundFxMenuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        soundFxDropdown.classList.toggle('hidden');
-      });
-      document.addEventListener('click', () => {
-        soundFxDropdown.classList.add('hidden');
-      });
     }
 
     // Admin modal
@@ -771,6 +764,7 @@ class GameController {
   }
 
   triggerBankerOffer() {
+    if (typeof mobilePeerManager !== 'undefined' && mobilePeerManager.resetVotes) mobilePeerManager.resetVotes();
     this.gameState = 'BANKER_OFFER';
     this.offerBroadcasted = false;
     this.updatePodium();

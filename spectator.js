@@ -125,6 +125,8 @@ class SpectatorController {
     else if (sound === 'noDeal') sounds.playNoDeal();
     else if (sound === 'win' || sound === 'fanfare') { sounds.playFanfare(); startConfetti(); }
     else if (sound === 'theme') sounds.playTheme();
+    else if (sound === 'buzzer') { if (typeof sounds !== 'undefined' && sounds.playBuzzer) sounds.playBuzzer(); }
+    else if (sound === 'stop') { if (typeof sounds !== 'undefined' && sounds.stopAll) sounds.stopAll(); }
   }
 
   renderState(state) {

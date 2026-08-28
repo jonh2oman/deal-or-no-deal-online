@@ -138,6 +138,13 @@
     const peer = new Peer();
     peer.on('open', (id) => {
       conn = peer.connect(hostPeerId);
+      conn.on('data', (msg) => {
+        if (msg && (msg.type === 'RESET_VOTE' || msg.type === 'RESET_VOTES')) {
+          // Show vote buttons again, hide the confirmation screen
+          voteGrid.classList.remove('hidden');
+          votedCard.classList.add('hidden');
+        }
+      });
     });
 
     document.getElementById('vote-deal-btn').addEventListener('click', () => castVote('deal'));

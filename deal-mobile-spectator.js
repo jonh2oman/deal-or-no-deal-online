@@ -46,17 +46,17 @@ class MobileDealSpectator {
       this.mobileSealedCase.textContent = state.playerCaseNumber ? `#${state.playerCaseNumber}` : 'None Chosen';
     }
 
-    if (state.isOfferActive && state.currentOffer) {
+    if (state.gameState === 'BANKER_OFFER' && state.offerBroadcasted) {
       if (this.mobileOfferBanner) this.mobileOfferBanner.classList.remove('hidden');
-      if (this.mobileOfferAmount) this.mobileOfferAmount.textContent = `$${state.currentOffer.cashAmount.toLocaleString()}`;
+      if (this.mobileOfferAmount) this.mobileOfferAmount.textContent = `$${(state.offerAmount || (state.currentOffer && state.currentOffer.offerAmount) || 0).toLocaleString()}`;
     } else {
       if (this.mobileOfferBanner) this.mobileOfferBanner.classList.add('hidden');
     }
 
     // Render Briefcases Grid
-    if (this.mobileCasesGrid && Array.isArray(state.briefcases)) {
+    if (this.mobileCasesGrid && Array.isArray(state.cases)) {
       this.mobileCasesGrid.innerHTML = '';
-      state.briefcases.forEach(b => {
+      state.cases.forEach(b => {
         const btn = document.createElement('div');
         btn.className = `mobile-case-btn ${b.opened ? 'opened' : ''}`;
         btn.textContent = `#${b.number}`;
@@ -66,13 +66,14 @@ class MobileDealSpectator {
 
     // Render Low & High Prize Columns
     if (Array.isArray(state.prizes)) {
+      const openedPrizeNames = new Set((state.cases || []).filter(c => c.opened && c.prize).map(c => c.prize.name));
       const sorted = [...state.prizes].sort((a, b) => a.numValue - b.numValue);
       const low = sorted.slice(0, Math.ceil(sorted.length / 2));
       const high = sorted.slice(Math.ceil(sorted.length / 2));
 
       if (this.mobileLowPrizes) {
         this.mobileLowPrizes.innerHTML = low.map(p => `
-          <div class="mobile-prize-item low ${p.opened ? 'opened' : ''}">
+          <div class="mobile-prize-item low ${openedPrizeNames.has(p.name) ? 'opened' : ''}">
             ${p.name}
           </div>
         `).join('');
@@ -80,7 +81,7 @@ class MobileDealSpectator {
 
       if (this.mobileHighPrizes) {
         this.mobileHighPrizes.innerHTML = high.map(p => `
-          <div class="mobile-prize-item high ${p.opened ? 'opened' : ''}">
+          <div class="mobile-prize-item high ${openedPrizeNames.has(p.name) ? 'opened' : ''}">
             ${p.name}
           </div>
         `).join('');

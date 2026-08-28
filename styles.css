@@ -238,10 +238,11 @@ body::before {
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 12px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .soundboard-row-label {
@@ -256,9 +257,9 @@ body::before {
 .soundboard-buttons-row {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
   flex-wrap: wrap;
-  flex: 1;
 }
 
 .sound-fx-btn.btn-sm {

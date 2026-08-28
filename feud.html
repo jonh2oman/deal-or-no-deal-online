@@ -183,21 +183,6 @@
         <button id="qr-btn" class="tool-btn admin-highlight" title="Show QR Code for Mobile Buzzers & Voting">
           <span class="btn-icon">📱</span> <span class="btn-text">Mobile Buzzers & QR</span>
         </button>
-        <!-- Integrated Top Header Sound FX Menu -->
-        <div class="sound-dropdown-wrapper" style="position: relative; display: inline-block;">
-          <button id="sound-fx-menu-btn" class="tool-btn" type="button" title="Quick Soundboard Effects">
-            <span class="btn-icon">🎵</span> <span class="btn-text">Sound FX ▾</span>
-          </button>
-          <div id="sound-fx-dropdown" class="sound-dropdown-menu hidden" style="position: absolute; right: 0; top: 110%; z-index: 1000; background: rgba(15, 27, 46, 0.96); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 8px; width: 200px; box-shadow: var(--shadow-neon);">
-            <button class="sound-fx-btn btn btn-secondary" data-sound="ding" style="font-size: 0.85rem; text-align: left;">🔔 Reveal Ding</button>
-            <button class="sound-fx-btn btn btn-secondary" data-sound="buzzer" style="font-size: 0.85rem; text-align: left;">🚨 Wrong Buzzer</button>
-            <button class="sound-fx-btn btn btn-secondary" data-sound="clock" style="font-size: 0.85rem; text-align: left;">⏱️ Clock Tick</button>
-            <button class="sound-fx-btn btn btn-secondary" data-sound="win" style="font-size: 0.85rem; text-align: left;">🏆 Win Fanfare</button>
-            <button class="sound-fx-btn btn btn-secondary" data-sound="theme" style="font-size: 0.85rem; text-align: left;">🎺 Stage Theme</button>
-            <button class="sound-fx-btn btn danger-light" data-sound="stop" style="font-size: 0.85rem; text-align: left;">🛑 Silence All</button>
-          </div>
-        </div>
-
         <button id="spectator-btn" class="tool-btn" title="Toggle Big Screen Spectator Mode">
           <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
         </button>
@@ -210,6 +195,19 @@
         <button id="reset-btn" class="tool-btn danger-light" title="Reset Current Round">
           <span class="btn-icon">🔄</span> <span class="btn-text">Reset Round</span>
         </button>
+      </div>
+
+      <!-- Integrated Header Soundboard Row -->
+      <div class="header-soundboard-row">
+        <span class="soundboard-row-label">🎵 STAGE SOUNDBOARD:</span>
+        <div class="soundboard-buttons-row">
+          <button class="sound-fx-btn btn-sm" data-sound="ding">🔔 Reveal Ding</button>
+          <button class="sound-fx-btn btn-sm" data-sound="buzzer">🚨 Wrong Buzzer</button>
+          <button class="sound-fx-btn btn-sm" data-sound="clock">⏱️ Clock Tick</button>
+          <button class="sound-fx-btn btn-sm" data-sound="win">🏆 Win Fanfare</button>
+          <button class="sound-fx-btn btn-sm" data-sound="theme">🎺 Theme Music</button>
+          <button class="sound-fx-btn btn-sm danger" data-sound="stop">🛑 Silence All</button>
+        </div>
       </div>
     </header>
 

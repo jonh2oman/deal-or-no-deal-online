@@ -32,10 +32,14 @@
 
       <!-- Action Toolbar -->
       <div class="toolbar">
-        <select id="theme-select" class="tool-btn select-tool" title="Change Stage Theme">
+        <select id="theme-select" class="tool-btn select-tool" title="Change Stage Theme Palette">
           <option value="runway-blue">✈️ Runway Blue</option>
           <option value="golden-sunset">🌅 Golden Sunset</option>
           <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
         </select>
 
         <select id="ambient-select" class="tool-btn select-tool" title="Ambient Stage Soundscape">
@@ -190,6 +194,18 @@
             <div class="input-group">
               <label>Banker / Host Call Title:</label>
               <input type="text" id="setting-banker-name" class="input-field" placeholder="e.g. FLIGHT CONTROL or THE BANKER">
+            </div>
+            <div class="input-group">
+              <label>Default Stage Theme Palette:</label>
+              <select id="setting-theme" class="input-field select-tool">
+                <option value="runway-blue">✈️ Runway Blue (Classic Navy & Silver)</option>
+                <option value="golden-sunset">🌅 Golden Sunset (Gold & Warm Amber)</option>
+                <option value="night-radar">📡 Night Radar (Emerald Radar Green)</option>
+                <option value="crimson-vip">🍷 Crimson VIP (Hollywood Red & Ruby)</option>
+                <option value="neon-cyber">🔮 Neon Cyberpunk (Synthwave Purple & Pink)</option>
+                <option value="emerald-gala">💎 Emerald Gala (Royal Mint & Teal)</option>
+                <option value="midnight-amethyst">🌌 Midnight Amethyst (Electric Violet)</option>
+              </select>
             </div>
           </div>
         </div>

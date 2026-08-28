@@ -159,6 +159,10 @@ class GameController {
     if (this.elements.brandEventSubtitle) this.elements.brandEventSubtitle.textContent = b.eventSubtitle || "LIVE STAGE GAME SHOW";
     if (this.elements.brandTagCode) this.elements.brandTagCode.textContent = b.eventTag || "DND-15";
     document.title = `${b.eventTitle || "Deal or No Deal"} - Host Control`;
+    if (b.defaultTheme && b.defaultTheme !== this.theme) {
+      this.setTheme(b.defaultTheme);
+      if (this.elements.themeSelect) this.elements.themeSelect.value = b.defaultTheme;
+    }
   }
 
   initDOM() {
@@ -184,6 +188,7 @@ class GameController {
       settingEventSubtitle: document.getElementById('setting-event-subtitle'),
       settingEventTag: document.getElementById('setting-event-tag'),
       settingBankerName: document.getElementById('setting-banker-name'),
+      settingTheme: document.getElementById('setting-theme'),
 
       // Modals
       caseRevealModal: document.getElementById('case-reveal-modal'),
@@ -926,6 +931,7 @@ class GameController {
       if (this.elements.settingEventSubtitle) this.elements.settingEventSubtitle.value = this.branding.eventSubtitle || "";
       if (this.elements.settingEventTag) this.elements.settingEventTag.value = this.branding.eventTag || "";
       if (this.elements.settingBankerName) this.elements.settingBankerName.value = this.branding.bankerName || "";
+      if (this.elements.settingTheme) this.elements.settingTheme.value = this.branding.defaultTheme || this.theme || "runway-blue";
     }
 
     this.elements.prizeForm.innerHTML = this.prizes.map((p, idx) => `
@@ -938,14 +944,18 @@ class GameController {
   }
 
   saveAdminForm() {
-    // 1. Save branding settings
+    // 1. Save branding settings & theme
+    const updatedTheme = this.elements.settingTheme ? this.elements.settingTheme.value : (this.theme || "runway-blue");
     const updatedBranding = {
       eventTitle: this.elements.settingEventTitle ? (this.elements.settingEventTitle.value.trim() || "DEAL OR NO DEAL") : "DEAL OR NO DEAL",
       eventSubtitle: this.elements.settingEventSubtitle ? (this.elements.settingEventSubtitle.value.trim() || "LIVE STAGE GAME SHOW") : "LIVE STAGE GAME SHOW",
       eventTag: this.elements.settingEventTag ? (this.elements.settingEventTag.value.trim() || "DND-15") : "DND-15",
-      bankerName: this.elements.settingBankerName ? (this.elements.settingBankerName.value.trim() || "BANKER") : "BANKER"
+      bankerName: this.elements.settingBankerName ? (this.elements.settingBankerName.value.trim() || "BANKER") : "BANKER",
+      defaultTheme: updatedTheme
     };
     this.saveBranding(updatedBranding);
+    this.setTheme(updatedTheme);
+    if (this.elements.themeSelect) this.elements.themeSelect.value = updatedTheme;
 
     // 2. Save prizes
     const updatedPrizes = [];

@@ -69,6 +69,70 @@ html[data-theme="night-radar"] {
   --shadow-neon: 0 0 25px rgba(52, 211, 153, 0.4);
 }
 
+/* Theme: 🍷 Crimson VIP / Hollywood Red */
+[data-theme="crimson-vip"],
+body[data-theme="crimson-vip"],
+html[data-theme="crimson-vip"] {
+  --bg-dark: #120307;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #4a0b17 0%, #24040a 60%, #0d0103 100%);
+  --glass-bg: rgba(55, 10, 20, 0.7);
+  --glass-border: rgba(244, 63, 94, 0.3);
+  --glass-glow: rgba(244, 63, 94, 0.25);
+  
+  --sky-blue: #fb7185;
+  --sky-blue-hover: #e11d48;
+  --deep-blue: #9f1239;
+  --shadow-neon: 0 0 25px rgba(244, 63, 94, 0.45);
+}
+
+/* Theme: 🔮 Neon Cyberpunk / Synthwave */
+[data-theme="neon-cyber"],
+body[data-theme="neon-cyber"],
+html[data-theme="neon-cyber"] {
+  --bg-dark: #0f051d;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #3b0764 0%, #1e0538 60%, #0a0114 100%);
+  --glass-bg: rgba(45, 10, 75, 0.7);
+  --glass-border: rgba(217, 70, 239, 0.3);
+  --glass-glow: rgba(217, 70, 239, 0.3);
+  
+  --sky-blue: #f0abfc;
+  --sky-blue-hover: #c084fc;
+  --deep-blue: #7e22ce;
+  --shadow-neon: 0 0 25px rgba(217, 70, 239, 0.5);
+}
+
+/* Theme: 💎 Emerald Gala / Royal Mint */
+[data-theme="emerald-gala"],
+body[data-theme="emerald-gala"],
+html[data-theme="emerald-gala"] {
+  --bg-dark: #021a18;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #064e3b 0%, #022c22 60%, #01140e 100%);
+  --glass-bg: rgba(4, 45, 35, 0.7);
+  --glass-border: rgba(45, 212, 191, 0.3);
+  --glass-glow: rgba(20, 184, 166, 0.25);
+  
+  --sky-blue: #2dd4bf;
+  --sky-blue-hover: #0d9488;
+  --deep-blue: #115e59;
+  --shadow-neon: 0 0 25px rgba(45, 212, 191, 0.45);
+}
+
+/* Theme: 🌌 Midnight Amethyst */
+[data-theme="midnight-amethyst"],
+body[data-theme="midnight-amethyst"],
+html[data-theme="midnight-amethyst"] {
+  --bg-dark: #0a071b;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #2e1065 0%, #170936 60%, #080316 100%);
+  --glass-bg: rgba(30, 15, 65, 0.7);
+  --glass-border: rgba(167, 139, 250, 0.3);
+  --glass-glow: rgba(139, 92, 246, 0.3);
+  
+  --sky-blue: #a78bfa;
+  --sky-blue-hover: #7c3aed;
+  --deep-blue: #5b21b6;
+  --shadow-neon: 0 0 25px rgba(167, 139, 250, 0.45);
+}
+
 /* Atmospheric Stage Spotlights */
 .stage-spotlight-left, .stage-spotlight-right {
   position: fixed;

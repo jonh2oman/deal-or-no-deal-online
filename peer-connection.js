@@ -49,6 +49,10 @@ class MobilePeerManager {
           this.handleBuzz(data, conn);
         } else if (data.type === 'VOTE') {
           this.handleVote(data, conn);
+        } else if (data.type === 'FINAL_SUBMIT') {
+          if (this.onFinalSubmitCallback) {
+            this.onFinalSubmitCallback(data);
+          }
         }
       });
 
@@ -123,6 +127,16 @@ class MobilePeerManager {
     this.buzzLocked = false;
     this.firstBuzzerName = null;
     this.connections.forEach(c => c.send({ type: 'RESET_BUZZER' }));
+  }
+
+  setMode(modeName) {
+    this.connections.forEach(c => {
+      if (modeName === 'FINAL_JEOPARDY') {
+        c.send({ type: 'MODE_FINAL_JEOPARDY' });
+      } else {
+        c.send({ type: 'MODE_BUZZER' });
+      }
+    });
   }
 
   handleVote(data) {

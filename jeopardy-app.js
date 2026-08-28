@@ -194,6 +194,35 @@ class JeopardyController {
   bindEvents() {
     this.elements.themeSelect.addEventListener('change', (e) => this.setTheme(e.target.value));
 
+    // CSV Import / Export
+    const importCsvBtn = document.getElementById('import-csv-btn');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    const csvFileInput = document.getElementById('csv-file-input');
+
+    if (exportCsvBtn) {
+      exportCsvBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        this.downloadCsvTemplate();
+      });
+    }
+
+    if (importCsvBtn && csvFileInput) {
+      importCsvBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        csvFileInput.click();
+      });
+
+      csvFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          this.parseCsvAndLoadBoard(evt.target.result);
+        };
+        reader.readAsText(file);
+      });
+    }
+
     this.elements.spectatorBtn.addEventListener('click', () => {
       window.open('jeopardy-spectator.html', 'JeopardySpectatorWindow', 'width=1280,height=720');
     });
@@ -410,6 +439,95 @@ class JeopardyController {
       localStorage.setItem('jeopardy_last_state', JSON.stringify(statePayload));
     } catch (e) {}
     this.broadcast.postMessage({ type: 'SYNC_JEOPARDY_STATE', state: statePayload });
+  }
+
+  downloadCsvTemplate() {
+    let csv = "Category,Value,Clue,Answer\n";
+    this.board.forEach(cat => {
+      cat.clues.forEach(c => {
+        const catEsc = `"${cat.category.replace(/"/g, '""')}"`;
+        const clueEsc = `"${c.text.replace(/"/g, '""')}"`;
+        const ansEsc = `"${c.answer.replace(/"/g, '""')}"`;
+        csv += `${catEsc},${c.val},${clueEsc},${ansEsc}\n`;
+      });
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'jeopardy_board_template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  parseCsvAndLoadBoard(csvText) {
+    const lines = csvText.split(/\r?\n/).filter(line => line.trim().length > 0);
+    if (lines.length <= 1) return;
+
+    if (lines[0].toUpperCase().includes('CATEGORY')) {
+      lines.shift();
+    }
+
+    const newBoardMap = {};
+
+    lines.forEach(line => {
+      const regex = /(?:^|,)(?:"([^"]*)"|([^,]*))/g;
+      const cols = [];
+      let match;
+      while ((match = regex.exec(line)) !== null) {
+        cols.push((match[1] !== undefined ? match[1] : match[2]).trim());
+      }
+
+      if (cols.length >= 4) {
+        const category = cols[0].toUpperCase();
+        const val = parseInt(cols[1], 10) || 200;
+        const text = cols[2];
+        const answer = cols[3];
+
+        if (!newBoardMap[category]) newBoardMap[category] = [];
+        newBoardMap[category].push({ val, text, answer, revealed: false });
+      }
+    });
+
+    const categories = Object.keys(newBoardMap).slice(0, 6);
+    if (categories.length === 0) {
+      alert("Could not parse valid categories from CSV. Please check formatting.");
+      return;
+    }
+
+    const newBoard = categories.map(catName => ({
+      category: catName,
+      clues: newBoardMap[catName].slice(0, 5)
+    }));
+
+    this.board = newBoard;
+    this.renderBoard();
+    this.broadcastState();
+    alert(`Successfully loaded ${categories.length} Jeopardy Categories from CSV!`);
+  }
+
+  handleFinalSubmit(finalData) {
+    sounds.playSelect();
+    if (this.elements.teleprompterClue) {
+      this.elements.teleprompterClue.textContent = `👑 ${finalData.teamName} SUBMITTED WAGER: $${finalData.wager} | ANSWER: "${finalData.answer}"`;
+    }
+  }
+
+  triggerFinalJeopardyMode() {
+    sounds.playTheme();
+    if (typeof mobilePeerManager !== 'undefined') {
+      mobilePeerManager.setMode('FINAL_JEOPARDY');
+    }
+    this.activeClue = {
+      category: "FINAL JEOPARDY",
+      val: "FINAL",
+      text: "THIS FAMOUS CANADIAN MONUMENT IS LOCATED IN NEWFOUNDLAND",
+      answer: "What is Signal Hill / Cape Spear?"
+    };
+    this.elements.teleprompterClue.textContent = `👑 FINAL JEOPARDY MODE ACTIVE - Mobile Wagers Open!`;
+    this.broadcastState();
   }
 }
 

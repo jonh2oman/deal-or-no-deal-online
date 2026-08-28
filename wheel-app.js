@@ -62,6 +62,7 @@ class WheelController {
     if (typeof mobilePeerManager !== 'undefined') {
       mobilePeerManager.initHost((buzzData) => {}, (voteData) => {});
       mobilePeerManager.setGameInfo("WHEEL OF FORTUNE", [this.p1Name, this.p2Name, this.p3Name]);
+      if (typeof mobilePeerManager !== 'undefined') mobilePeerManager.setMobileTarget('wheel-mobile-spectator.html', false);
     }
   }
 
@@ -70,6 +71,9 @@ class WheelController {
     this.spectatorBtn = document.getElementById('spectator-btn');
     this.resetBtn = document.getElementById('reset-btn');
     this.qrBtn = document.getElementById('qr-btn');
+    this.qrModal = document.getElementById('qr-modal');
+    this.closeQrBtn = document.getElementById('close-qr-btn');
+    this.resetBuzzersBtn = document.getElementById('reset-buzzers-btn');
     this.spinWheelBtn = document.getElementById('spin-wheel-btn');
     this.spinValueTag = document.getElementById('spin-value-tag');
     this.categoryDisplay = document.getElementById('category-display');
@@ -99,6 +103,10 @@ class WheelController {
   }
 
   bindEvents() {
+    if (this.qrBtn) this.qrBtn.addEventListener('click', () => { if (this.qrModal) this.qrModal.classList.remove('hidden'); });
+    if (this.closeQrBtn) this.closeQrBtn.addEventListener('click', () => { if (this.qrModal) this.qrModal.classList.add('hidden'); });
+    if (this.resetBuzzersBtn) this.resetBuzzersBtn.addEventListener('click', () => { if (typeof mobilePeerManager !== 'undefined' && mobilePeerManager.resetBuzzers) mobilePeerManager.resetBuzzers(); });
+
     if (this.themeSelect) {
       this.themeSelect.addEventListener('change', (e) => {
         document.body.setAttribute('data-theme', e.target.value);

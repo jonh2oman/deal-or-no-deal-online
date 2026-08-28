@@ -63,6 +63,7 @@ class WhammyController {
         if (this.isCycling) this.stopBoard();
       }, (voteData) => {});
       mobilePeerManager.setGameInfo("PRESS YOUR LUCK", [this.p1Name, this.p2Name, this.p3Name]);
+      if (typeof mobilePeerManager !== 'undefined') mobilePeerManager.setMobileTarget('buzzer.html', true);
     }
   }
 
@@ -70,6 +71,10 @@ class WhammyController {
     this.themeSelect = document.getElementById('theme-select');
     this.spectatorBtn = document.getElementById('spectator-btn');
     this.resetBtn = document.getElementById('reset-btn');
+    this.qrBtn = document.getElementById('qr-btn');
+    this.qrModal = document.getElementById('qr-modal');
+    this.closeQrBtn = document.getElementById('close-qr-btn');
+    this.resetBuzzersBtn = document.getElementById('reset-buzzers-btn');
     this.whammyGrid = document.getElementById('whammy-grid');
 
     this.p1NameInput = document.getElementById('p1-name');
@@ -96,6 +101,10 @@ class WhammyController {
   }
 
   bindEvents() {
+    if (this.qrBtn) this.qrBtn.addEventListener('click', () => { if (this.qrModal) this.qrModal.classList.remove('hidden'); });
+    if (this.closeQrBtn) this.closeQrBtn.addEventListener('click', () => { if (this.qrModal) this.qrModal.classList.add('hidden'); });
+    if (this.resetBuzzersBtn) this.resetBuzzersBtn.addEventListener('click', () => { if (typeof mobilePeerManager !== 'undefined' && mobilePeerManager.resetBuzzers) mobilePeerManager.resetBuzzers(); });
+
     if (this.themeSelect) {
       this.themeSelect.addEventListener('change', (e) => {
         document.body.setAttribute('data-theme', e.target.value);

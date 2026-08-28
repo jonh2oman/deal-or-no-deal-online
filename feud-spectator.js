@@ -144,8 +144,10 @@ class FeudSpectatorController {
         const strikeXs = Array.from({ length: state.strikes }, () => `<span class="strike-x">❌</span>`).join('');
         this.elements.strikeOverlay.innerHTML = strikeXs;
         this.elements.strikeOverlay.classList.remove('hidden');
+        this.elements.strikeOverlay.style.display = 'flex';
       } else {
         this.elements.strikeOverlay.classList.add('hidden');
+        this.elements.strikeOverlay.style.display = 'none';
       }
     }
   }

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="runway-blue">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Stage Buzzer - Player Mobile Controller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .mobile-buzzer-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mobile-header {
+      text-align: center;
+      width: 100%;
+    }
+
+    .mobile-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .mobile-status-tag {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--sky-blue);
+      margin-top: 4px;
+    }
+
+    .team-select-box {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .team-opt-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .team-opt-btn.selected {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-color: var(--sky-blue);
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+    }
+
+    /* Giant 3D Buzz Button */
+    .giant-buzz-btn {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #f87171, #ef4444 60%, #991b1b 100%);
+      border: 6px solid #fca5a5;
+      box-shadow: 0 15px 40px rgba(239, 68, 68, 0.6), inset 0 -10px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .giant-buzz-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.8), inset 0 5px 15px rgba(0, 0, 0, 0.6);
+    }
+
+    .buzz-btn-text {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .buzz-btn-sub {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fecdd3;
+      margin-top: 4px;
+    }
+
+    /* Lockout Banner */
+    .lockout-box {
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid #ef4444;
+      border-radius: 16px;
+      padding: 16px 24px;
+      text-align: center;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .lockout-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fca5a5;
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient Stage Spotlights -->
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="mobile-buzzer-container">
+    <header class="mobile-header">
+      <div class="mobile-title">STAGE PLAYER BUZZER</div>
+      <div class="mobile-status-tag" id="status-tag">CONNECTED TO HOST</div>
+    </header>
+
+    <div class="team-select-box">
+      <button class="team-opt-btn selected" id="team1-btn" type="button">TEAM 1</button>
+      <button class="team-opt-btn" id="team2-btn" type="button">TEAM 2</button>
+    </div>
+
+    <!-- Lockout Display (Hidden by default) -->
+    <div class="lockout-box hidden" id="lockout-box">
+      <div class="lockout-title" id="lockout-text">LOCKED OUT!</div>
+      <p style="color: #ffffff; font-size: 0.9rem; margin-top: 4px;" id="lockout-sub">Another player buzzed first.</p>
+    </div>
+
+    <!-- Giant 3D Buzz Button -->
+    <div class="giant-buzz-btn" id="buzz-btn">
+      <span class="buzz-btn-text">BUZZ IN!</span>
+      <span class="buzz-btn-sub">TAP SCREEN</span>
+    </div>
+
+    <footer style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+      Stage Game Show Suite &copy; 2026
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const hostPeerId = urlParams.get('host') || 'STAGE-1000';
+
+    let selectedTeam = "TEAM 1";
+    let conn = null;
+    let startTime = Date.now();
+
+    const team1Btn = document.getElementById('team1-btn');
+    const team2Btn = document.getElementById('team2-btn');
+    const buzzBtn = document.getElementById('buzz-btn');
+    const statusTag = document.getElementById('status-tag');
+    const lockoutBox = document.getElementById('lockout-box');
+    const lockoutText = document.getElementById('lockout-text');
+
+    team1Btn.addEventListener('click', () => {
+      selectedTeam = "TEAM 1";
+      team1Btn.classList.add('selected');
+      team2Btn.classList.remove('selected');
+    });
+
+    team2Btn.addEventListener('click', () => {
+      selectedTeam = "TEAM 2";
+      team2Btn.classList.add('selected');
+      team1Btn.classList.remove('selected');
+    });
+
+    // Initialize PeerJS client connection
+    const peer = new Peer();
+    peer.on('open', (id) => {
+      conn = peer.connect(hostPeerId);
+      conn.on('open', () => {
+        statusTag.textContent = "CONNECTED & READY ⚡";
+        statusTag.style.color = "#34d399";
+      });
+
+      conn.on('data', (data) => {
+        if (!data) return;
+        if (data.type === 'BUZZ_WIN') {
+          lockoutText.textContent = "YOU BUZZED FIRST! ⚡";
+          lockoutBox.style.borderColor = "#34d399";
+          lockoutBox.style.background = "rgba(52, 211, 153, 0.2)";
+          lockoutBox.classList.remove('hidden');
+        } else if (data.type === 'LOCKOUT') {
+          lockoutText.textContent = `LOCKED OUT! (${data.winner} Buzzed First)`;
+          lockoutBox.style.borderColor = "#ef4444";
+          lockoutBox.style.background = "rgba(239, 68, 68, 0.2)";
+          lockoutBox.classList.remove('hidden');
+        } else if (data.type === 'RESET_BUZZER') {
+          lockoutBox.classList.add('hidden');
+          startTime = Date.now();
+        }
+      });
+    });
+
+    buzzBtn.addEventListener('touchstart', triggerBuzz);
+    buzzBtn.addEventListener('click', triggerBuzz);
+
+    function triggerBuzz(e) {
+      if (e) e.preventDefault();
+      if (navigator.vibrate) navigator.vibrate(100);
+
+      const reactionTime = ((Date.now() - startTime) / 1000).toFixed(3);
+      if (conn && conn.open) {
+        conn.send({
+          type: 'BUZZ',
+          teamName: selectedTeam,
+          reactionTime: reactionTime
+        });
+      }
+    }
+  </script>
+</body>
+</html>

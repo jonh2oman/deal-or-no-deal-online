@@ -103,6 +103,22 @@ class GameController {
       this.elements.soundIcon.textContent = '📺';
       this.elements.soundText.textContent = 'Spectator PA Audio Only (Host Muted)';
     }
+
+    if (typeof mobilePeerManager !== 'undefined') {
+      mobilePeerManager.initHost(
+        (buzzData) => {
+          sounds.playBuzzer();
+          this.broadcast.postMessage({ type: 'PLAY_SOUND', sound: 'buzzer' });
+        },
+        (voteData) => {
+          this.updateStatusBanner(
+            "AUDIENCE LIVE VOTE RESULT",
+            `🤝 ${voteData.dealPct}% DEAL | 🚫 ${voteData.noDealPct}% NO DEAL (${voteData.total} Votes)`
+          );
+          this.broadcastState();
+        }
+      );
+    }
   }
 
   // Load custom prizes from localStorage or default
@@ -443,6 +459,32 @@ class GameController {
       sounds.playSelect();
       this.resetGame();
     });
+
+    const qrBtn = document.getElementById('qr-btn');
+    const qrModal = document.getElementById('qr-modal');
+    const closeQrBtn = document.getElementById('close-qr-btn');
+    const resetBuzzersBtn = document.getElementById('reset-buzzers-btn');
+
+    if (qrBtn && qrModal) {
+      qrBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        qrModal.classList.remove('hidden');
+      });
+    }
+
+    if (closeQrBtn && qrModal) {
+      closeQrBtn.addEventListener('click', () => qrModal.classList.add('hidden'));
+    }
+
+    if (resetBuzzersBtn) {
+      resetBuzzersBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        if (typeof mobilePeerManager !== 'undefined') {
+          mobilePeerManager.resetBuzzers();
+          mobilePeerManager.resetVotes();
+        }
+      });
+    }
 
     // Admin modal
     this.elements.adminBtn.addEventListener('click', () => {

@@ -96,6 +96,13 @@ class FeudController {
     this.applyBranding();
     this.renderQuestionList();
     this.loadQuestion(0);
+
+    if (typeof mobilePeerManager !== 'undefined') {
+      mobilePeerManager.initHost(
+        (buzzData) => this.handleMobileBuzz(buzzData),
+        (voteData) => this.handleMobileVote(voteData)
+      );
+    }
   }
 
   loadBranding() {
@@ -329,11 +336,52 @@ class FeudController {
       this.elements.adminModal.classList.add('hidden');
     });
 
+    const qrBtn = document.getElementById('qr-btn');
+    const qrModal = document.getElementById('qr-modal');
+    const closeQrBtn = document.getElementById('close-qr-btn');
+    const resetBuzzersBtn = document.getElementById('reset-buzzers-btn');
+
+    if (qrBtn && qrModal) {
+      qrBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        qrModal.classList.remove('hidden');
+      });
+    }
+
+    if (closeQrBtn && qrModal) {
+      closeQrBtn.addEventListener('click', () => qrModal.classList.add('hidden'));
+    }
+
+    if (resetBuzzersBtn) {
+      resetBuzzersBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        if (typeof mobilePeerManager !== 'undefined') {
+          mobilePeerManager.resetBuzzers();
+        }
+      });
+    }
+
     this.elements.resetBtn.addEventListener('click', () => {
       this.roundBank = 0;
       this.strikes = 0;
+      if (typeof mobilePeerManager !== 'undefined') {
+        mobilePeerManager.resetBuzzers();
+      }
       this.loadQuestion(this.activeQuestionIndex);
     });
+  }
+
+  handleMobileBuzz(buzzData) {
+    sounds.playBuzzer();
+    this.broadcast.postMessage({ type: 'PLAY_SOUND', sound: 'buzzer' });
+    this.triggerStrike(1);
+    if (this.elements.activeQuestionText) {
+      this.elements.activeQuestionText.textContent = `⚡ ${buzzData.teamName} BUZZED IN! (${buzzData.reactionTime}s)`;
+    }
+  }
+
+  handleMobileVote(voteData) {
+    // Vote aggregation handler
   }
 
   loadQuestions() {

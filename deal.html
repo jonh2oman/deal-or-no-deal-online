@@ -48,6 +48,9 @@
           <option value="radar-pulse">📡 Radar Pulse</option>
         </select>
 
+        <button id="qr-btn" class="tool-btn admin-highlight" title="Show QR Code for Mobile Buzzers & Voting">
+          <span class="btn-icon">📱</span> <span class="btn-text">Mobile & QR</span>
+        </button>
         <button id="peek-toggle-btn" class="tool-btn peek-highlight" title="Toggle Host Secret X-Ray Case Peek Mode">
           <span class="btn-icon" id="peek-icon">👁️</span> <span class="btn-text" id="peek-text">Host Peek OFF</span>
         </button>
@@ -368,9 +371,37 @@
     </div>
   </div>
 
+  <!-- MODAL: Mobile Buzzers & QR Code -->
+  <div class="modal-overlay hidden" id="qr-modal">
+    <div class="modal-glass admin-modal-content" style="max-width: 480px; text-align: center;">
+      <div class="modal-header center-text">
+        <div class="modal-title-group">
+          <h2>📱 Mobile Player Buzzers & Voting</h2>
+          <p>Scan with smartphone camera to connect live to stage!</p>
+        </div>
+        <button id="close-qr-btn" class="close-modal-btn" type="button">&times;</button>
+      </div>
+
+      <div style="margin: 20px 0; display: flex; flex-direction: column; align-items: center;">
+        <div id="qrcode-canvas" style="padding: 16px; background: #ffffff; border-radius: 16px; box-shadow: var(--shadow-neon);"></div>
+        <p style="margin-top: 12px; font-size: 0.85rem; color: var(--sky-blue);" id="qr-status-text">
+          Scan QR Code on Mobile Phone
+        </p>
+        <a id="qr-direct-link" href="#" target="_blank" style="color: var(--text-muted); font-size: 0.8rem; word-break: break-all; margin-top: 6px;"></a>
+      </div>
+
+      <div class="modal-footer">
+        <button id="reset-buzzers-btn" class="btn btn-primary" type="button">
+          <span>🔄</span> Reset Mobile Connections
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="audio.js"></script>
   <script src="banker.js"></script>
+  <script src="peer-connection.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

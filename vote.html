@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="runway-blue">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Audience Live Vote - Mobile Controller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .vote-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .vote-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .vote-sub {
+      font-size: 0.95rem;
+      color: var(--sky-blue);
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .vote-buttons-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .vote-card-btn {
+      padding: 24px 20px;
+      border-radius: 20px;
+      border: 2px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: var(--shadow-glass);
+      transition: transform 0.15s ease;
+    }
+
+    .vote-card-btn:active {
+      transform: scale(0.95);
+    }
+
+    .vote-btn-deal {
+      background: linear-gradient(135deg, #10b981, #047857);
+      border-color: #34d399;
+    }
+
+    .vote-btn-nodeal {
+      background: linear-gradient(135deg, #ef4444, #991b1b);
+      border-color: #fca5a5;
+    }
+
+    .voted-confirm-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient Stage Spotlights -->
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="vote-container">
+    <div>
+      <h1 class="vote-title">AUDIENCE LIVE VOTE</h1>
+      <p class="vote-sub" id="vote-sub-text">Should the contestant accept the offer?</p>
+    </div>
+
+    <!-- Active Voting Buttons -->
+    <div class="vote-buttons-grid" id="vote-grid">
+      <button class="vote-card-btn vote-btn-deal" id="vote-deal-btn" type="button">
+        <span>🤝</span> DEAL
+      </button>
+      <button class="vote-card-btn vote-btn-nodeal" id="vote-nodeal-btn" type="button">
+        <span>🚫</span> NO DEAL
+      </button>
+    </div>
+
+    <!-- Voted Confirmation Screen (Hidden by default) -->
+    <div class="voted-confirm-card hidden" id="voted-card">
+      <div style="font-size: 4rem; margin-bottom: 10px;">✅</div>
+      <h2 style="font-family: var(--font-display); font-size: 1.6rem; color: #ffffff;">VOTE RECORDED!</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+        Thank you for participating! Watch the big screen TV to see live audience results.
+      </p>
+    </div>
+
+    <footer style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+      Stage Game Show Suite &copy; 2026
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const hostPeerId = urlParams.get('host') || 'STAGE-1000';
+
+    let conn = null;
+    const voteGrid = document.getElementById('vote-grid');
+    const votedCard = document.getElementById('voted-card');
+
+    const peer = new Peer();
+    peer.on('open', (id) => {
+      conn = peer.connect(hostPeerId);
+    });
+
+    document.getElementById('vote-deal-btn').addEventListener('click', () => castVote('deal'));
+    document.getElementById('vote-nodeal-btn').addEventListener('click', () => castVote('nodeal'));
+
+    function castVote(voteType) {
+      if (navigator.vibrate) navigator.vibrate(80);
+      if (conn && conn.open) {
+        conn.send({ type: 'VOTE', vote: voteType });
+      }
+      voteGrid.classList.add('hidden');
+      votedCard.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

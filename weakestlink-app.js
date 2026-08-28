@@ -42,6 +42,7 @@ class WeakestLinkController {
     if (typeof mobilePeerManager !== 'undefined') {
       mobilePeerManager.initHost((buzzData) => {}, (voteData) => {});
       mobilePeerManager.setGameInfo("THE WEAKEST LINK", this.players.map(p => p.name));
+      mobilePeerManager.setMobileTarget('vote.html', true);
     }
   }
 
@@ -62,9 +63,18 @@ class WeakestLinkController {
     this.timerResetBtn = document.getElementById('timer-reset-btn');
 
     this.soundFxBtns = document.querySelectorAll('.sound-fx-btn');
+
+    this.qrBtn = document.getElementById('qr-btn');
+    this.qrModal = document.getElementById('qr-modal');
+    this.closeQrBtn = document.getElementById('close-qr-btn');
+    this.resetBuzzersBtn = document.getElementById('reset-buzzers-btn');
   }
 
   bindEvents() {
+    if (this.qrBtn) this.qrBtn.addEventListener('click', () => { if (this.qrModal) this.qrModal.classList.remove('hidden'); });
+    if (this.closeQrBtn) this.closeQrBtn.addEventListener('click', () => { if (this.qrModal) this.qrModal.classList.add('hidden'); });
+    if (this.resetBuzzersBtn) this.resetBuzzersBtn.addEventListener('click', () => { if (typeof mobilePeerManager !== 'undefined' && mobilePeerManager.resetBuzzers) mobilePeerManager.resetBuzzers(); });
+
     if (this.themeSelect) {
       this.themeSelect.addEventListener('change', (e) => {
         document.body.setAttribute('data-theme', e.target.value);

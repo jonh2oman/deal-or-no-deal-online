@@ -23,6 +23,8 @@ const WHAMMY_BOARD_TILES = [
   { val: 1000, label: "$1,000 + SPIN", spins: 1, type: "cash" }
 ];
 
+const PERIMETER_PATH = [0, 1, 2, 3, 4, 5, 7, 9, 11, 17, 16, 15, 14, 13, 12, 10, 8, 6];
+
 class WhammyController {
   constructor() {
     this.broadcast = new BroadcastChannel('whammy_stage_broadcast');
@@ -45,6 +47,8 @@ class WhammyController {
 
     this.activeTurn = 0;
     this.activeTileIdx = 0;
+    this.perimeterStep = 0;
+    this.playerEliminated = false;
     this.isCycling = false;
     this.cycleTimer = null;
 
@@ -110,6 +114,11 @@ class WhammyController {
         this.p1Cash = 0; this.p2Cash = 0; this.p3Cash = 0;
         this.p1Spins = 3; this.p2Spins = 3; this.p3Spins = 3;
         this.p1Whammies = 0; this.p2Whammies = 0; this.p3Whammies = 0;
+        this.playerEliminated = false;
+        const stopBtn = document.getElementById('stop-btn');
+        const spinBtn = document.getElementById('spin-btn');
+        if (stopBtn) stopBtn.disabled = false;
+        if (spinBtn) spinBtn.disabled = false;
         this.renderScores();
         this.broadcastState();
       });
@@ -160,7 +169,8 @@ class WhammyController {
     this.isCycling = true;
     sounds.playClock();
     this.cycleTimer = setInterval(() => {
-      this.activeTileIdx = (this.activeTileIdx + 1) % WHAMMY_BOARD_TILES.length;
+      this.perimeterStep = ((this.perimeterStep || 0) + 1) % PERIMETER_PATH.length;
+      this.activeTileIdx = PERIMETER_PATH[this.perimeterStep];
       this.renderBoard();
     }, 90);
   }
@@ -181,6 +191,18 @@ class WhammyController {
       if (this.activeTurn === 0) { this.p1Cash = 0; this.p1Whammies++; }
       else if (this.activeTurn === 1) { this.p2Cash = 0; this.p2Whammies++; }
       else if (this.activeTurn === 2) { this.p3Cash = 0; this.p3Whammies++; }
+
+      if (this.p1Whammies >= 4) {
+        // Eliminate the player
+        this.playerEliminated = true;
+        if (typeof sounds !== 'undefined' && sounds.playBuzzer) sounds.playBuzzer();
+        alert('4 WHAMMIES! Player eliminated!');
+        // Disable the STOP and SPIN buttons
+        const stopBtn = document.getElementById('stop-btn');
+        const spinBtn = document.getElementById('spin-btn');
+        if (stopBtn) stopBtn.disabled = true;
+        if (spinBtn) spinBtn.disabled = true;
+      }
     } else {
       sounds.playDing();
       if (this.activeTurn === 0) { this.p1Cash += landed.val; this.p1Spins += landed.spins; }

@@ -13,6 +13,7 @@ class WeakestLinkSpectator {
     this.chainLadderTv = document.getElementById('chain-ladder-tv');
     this.totalBankTv = document.getElementById('total-bank-tv');
     this.playersGridTv = document.getElementById('players-grid-tv');
+    this.roundTimerTv = document.getElementById('round-timer-tv');
 
     this.init();
   }
@@ -35,6 +36,12 @@ class WeakestLinkSpectator {
     if (!state) return;
 
     if (this.totalBankTv) this.totalBankTv.textContent = `$${state.totalBanked || 0}`;
+
+    if (this.roundTimerTv && state.timerSeconds !== undefined) {
+      const m = Math.floor(state.timerSeconds / 60);
+      const s = (state.timerSeconds % 60).toString().padStart(2, '0');
+      this.roundTimerTv.textContent = `${m}:${s}`;
+    }
 
     // Chain TV
     if (this.chainLadderTv) {

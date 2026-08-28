@@ -142,6 +142,16 @@
 
       <!-- Right: Main Host Controls & Players -->
       <div style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Round Timer -->
+        <div class="header-glass" style="padding: 14px 24px; display: flex; align-items: center; justify-content: center; gap: 16px;">
+          <div style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 900; color: #fef08a; letter-spacing: 3px;" id="round-timer-display">2:30</div>
+          <div style="display: flex; gap: 8px;">
+            <button id="timer-start-btn" class="btn btn-primary">▶ Start</button>
+            <button id="timer-pause-btn" class="btn btn-secondary">⏸ Pause</button>
+            <button id="timer-reset-btn" class="btn danger-light">🔄 Reset</button>
+          </div>
+        </div>
+
         <!-- Bank & Chain Controls -->
         <div class="header-glass" style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
           <div>

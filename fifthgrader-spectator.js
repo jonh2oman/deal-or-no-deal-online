@@ -56,6 +56,9 @@ class FifthSpectator {
       this.answerTextTv.textContent = state.revealedAnswer ? state.answer : "";
     }
 
+    const overlay = document.getElementById('dropout-overlay');
+    if (overlay) overlay.style.display = state.droppedOut ? 'flex' : 'none';
+
     // Grid TV
     if (this.subjectGridTv) {
       this.subjectGridTv.innerHTML = '';

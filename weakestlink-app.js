@@ -20,6 +20,10 @@ class WeakestLinkController {
     this.currentChainIdx = -1;
     this.totalBanked = 0;
 
+    this.timerSeconds = 150;
+    this.timerRunning = false;
+    this.timerInterval = null;
+
     this.players = [
       { id: 1, name: "PLAYER 1", eliminated: false },
       { id: 2, name: "PLAYER 2", eliminated: false },
@@ -52,6 +56,11 @@ class WeakestLinkController {
     this.correctBtn = document.getElementById('correct-btn');
     this.wrongBtn = document.getElementById('wrong-btn');
 
+    this.roundTimerDisplay = document.getElementById('round-timer-display');
+    this.timerStartBtn = document.getElementById('timer-start-btn');
+    this.timerPauseBtn = document.getElementById('timer-pause-btn');
+    this.timerResetBtn = document.getElementById('timer-reset-btn');
+
     this.soundFxBtns = document.querySelectorAll('.sound-fx-btn');
   }
 
@@ -72,6 +81,10 @@ class WeakestLinkController {
     if (this.bankBtn) {
       this.bankBtn.addEventListener('click', () => this.bankMoney());
     }
+
+    if (this.timerStartBtn) this.timerStartBtn.addEventListener('click', () => this.startTimer());
+    if (this.timerPauseBtn) this.timerPauseBtn.addEventListener('click', () => this.pauseTimer());
+    if (this.timerResetBtn) this.timerResetBtn.addEventListener('click', () => this.resetRoundTimer());
 
     if (this.correctBtn) {
       this.correctBtn.addEventListener('click', () => {
@@ -100,6 +113,7 @@ class WeakestLinkController {
         this.players.forEach(p => p.eliminated = false);
         this.renderChain();
         this.renderPlayers();
+        this.renderScores();
         this.broadcastState();
       });
     }
@@ -109,7 +123,7 @@ class WeakestLinkController {
         btn.addEventListener('click', () => {
           const snd = btn.getAttribute('data-sound');
           if (snd === 'chime') sounds.playDing();
-          else if (snd === 'daily') sounds.playDeal();
+          else if (snd === 'daily') sounds.playFanfare();
           else if (snd === 'buzzer') sounds.playBuzzer();
           else if (snd === 'win') sounds.playFanfare();
           else if (snd === 'theme') sounds.playTheme();
@@ -120,9 +134,42 @@ class WeakestLinkController {
     }
   }
 
+  startTimer() {
+    if (this.timerRunning) return;
+    this.timerRunning = true;
+    this.timerInterval = setInterval(() => {
+      if (this.timerSeconds > 0) {
+        this.timerSeconds--;
+        this.renderTimer();
+        this.broadcastState();
+      } else {
+        this.pauseTimer();
+      }
+    }, 1000);
+  }
+
+  pauseTimer() {
+    this.timerRunning = false;
+    clearInterval(this.timerInterval);
+  }
+
+  resetRoundTimer() {
+    this.pauseTimer();
+    this.timerSeconds = 150;
+    this.renderTimer();
+    this.broadcastState();
+  }
+
+  renderTimer() {
+    if (!this.roundTimerDisplay) return;
+    const m = Math.floor(this.timerSeconds / 60);
+    const s = (this.timerSeconds % 60).toString().padStart(2, '0');
+    this.roundTimerDisplay.textContent = `${m}:${s}`;
+  }
+
   bankMoney() {
     if (this.currentChainIdx >= 0) {
-      sounds.playDeal();
+      sounds.playFanfare();
       this.totalBanked += WEAKEST_LINK_CHAIN[this.currentChainIdx].val;
       this.currentChainIdx = -1;
       this.renderChain();
@@ -182,7 +229,8 @@ class WeakestLinkController {
     const payload = {
       currentChainIdx: this.currentChainIdx,
       totalBanked: this.totalBanked,
-      players: this.players
+      players: this.players,
+      timerSeconds: this.timerSeconds
     };
     try {
       localStorage.setItem('weakestlink_last_state', JSON.stringify(payload));

@@ -23,6 +23,7 @@ class FifthGraderController {
     this.classmate = "ALEX";
     this.revealedAnswer = false;
     this.clearedSubjects = new Set();
+    this.droppedOut = false;
 
     sounds.muted = true;
     this.initDOM();
@@ -100,8 +101,9 @@ class FifthGraderController {
 
     if (this.dropOutBtn) {
       this.dropOutBtn.addEventListener('click', () => {
+        this.droppedOut = true;
         sounds.playBuzzer();
-        alert("CONTESTANT DROPPED OUT! 'I am NOT smarter than a 5th grader!'");
+        this.broadcastState();
       });
     }
 
@@ -110,6 +112,7 @@ class FifthGraderController {
         this.currentSubjectIdx = 0;
         this.clearedSubjects.clear();
         this.revealedAnswer = false;
+        this.droppedOut = false;
         this.renderGrid();
         this.renderQuestion();
         this.broadcastState();
@@ -173,7 +176,8 @@ class FifthGraderController {
       answer: s.answer,
       revealedAnswer: this.revealedAnswer,
       classmate: this.classmate,
-      clearedSubjects: Array.from(this.clearedSubjects)
+      clearedSubjects: Array.from(this.clearedSubjects),
+      droppedOut: this.droppedOut
     };
     try {
       localStorage.setItem('fifthgrader_last_state', JSON.stringify(payload));

@@ -104,11 +104,10 @@ class MinuteToWinItController {
     sounds.playClock();
 
     this.timerInterval = setInterval(() => {
-      if (this.timeLeft > 0) {
-        this.timeLeft--;
-        this.renderClock();
-        this.broadcastState();
-      } else {
+      this.timeLeft--;
+      this.renderClock();
+      this.broadcastState();
+      if (this.timeLeft === 0) {
         this.pauseTimer();
         sounds.playBuzzer();
       }

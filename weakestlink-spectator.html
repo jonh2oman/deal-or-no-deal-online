@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Weakest Link - Live Stage TV Display</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+      background: #020617;
+    }
+
+    .spectator-container {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      height: 100vh;
+      width: 100vw;
+      padding: 24px;
+      box-sizing: border-box;
+      gap: 24px;
+    }
+
+    .chain-ladder-tv {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 3px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+    }
+
+    .chain-step-tv {
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px solid var(--glass-border);
+      color: #94a3b8;
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .chain-step-tv.active {
+      background: #facc15;
+      color: #0f172a;
+      border-color: #fef08a;
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.7);
+    }
+
+    .players-grid-tv {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .player-card-tv {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .player-card-tv.eliminated {
+      opacity: 0.35;
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="spectator-container">
+    <!-- Left: 8-Step Money Chain TV -->
+    <div class="chain-ladder-tv" id="chain-ladder-tv">
+      <!-- Generated dynamically -->
+    </div>
+
+    <!-- Right: Total Bank & Players TV -->
+    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.8); border: 2px solid var(--glass-border); border-radius: 20px; padding: 20px 30px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span style="font-size: 3rem;">🔗</span>
+          <h1 style="font-family: var(--font-display); font-size: 2.5rem; margin: 0; color: #ffffff; letter-spacing: 2px;">
+            THE WEAKEST LINK
+          </h1>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 1rem; color: #cbd5e1;">TOTAL BANKED MONEY:</div>
+          <div style="font-family: var(--font-display); font-size: 3.5rem; color: #34d399; font-weight: 900;" id="total-bank-tv">$0</div>
+        </div>
+      </div>
+
+      <!-- Contestants Grid TV -->
+      <div class="players-grid-tv" id="players-grid-tv">
+        <!-- 6 Players generated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="weakestlink-spectator.js"></script>
+</body>
+</html>

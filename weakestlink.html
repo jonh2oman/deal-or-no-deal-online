@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Weakest Link - Stage Host Control</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .link-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .bank-chain-ladder {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 6px;
+    }
+
+    .chain-step {
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--glass-border);
+      color: #94a3b8;
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .chain-step.active {
+      background: #facc15;
+      color: #0f172a;
+      border-color: #fef08a;
+      box-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
+    }
+
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .player-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .player-card.eliminated {
+      opacity: 0.4;
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="stage-badge" id="brand-tag-code">
+          <span class="badge-text" id="brand-tag-text">LINK-1</span>
+          <span class="badge-icon">🔗</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">THE WEAKEST LINK</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Host Stage Controller</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+        </select>
+
+        <button id="qr-btn" class="tool-btn admin-highlight">
+          <span class="btn-icon">📱</span> <span class="btn-text">Mobile Voting & QR</span>
+        </button>
+        <button id="spectator-btn" class="tool-btn">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn">
+          <span class="btn-icon" id="sound-icon">📺</span> <span class="btn-text" id="sound-text">PA Audio Only</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Game</span>
+        </button>
+      </div>
+
+      <!-- Integrated Header Soundboard Row -->
+      <div class="header-soundboard-row">
+        <span class="soundboard-row-label">🎵 STAGE SOUNDBOARD:</span>
+        <div class="soundboard-buttons-row">
+          <button class="sound-fx-btn btn-sm" data-sound="chime">🔔 Correct Step</button>
+          <button class="sound-fx-btn btn-sm" data-sound="daily">🏦 BANK!</button>
+          <button class="sound-fx-btn btn-sm" data-sound="buzzer">🚨 Wrong Answer</button>
+          <button class="sound-fx-btn btn-sm" data-sound="win">🏆 Goodbye Fanfare</button>
+          <button class="sound-fx-btn btn-sm" data-sound="theme">🎺 Theme Music</button>
+          <button class="sound-fx-btn btn-sm danger" data-sound="stop">🛑 Silence All</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="link-layout">
+      <!-- Left: 8-Step Money Chain Ladder -->
+      <div class="bank-chain-ladder" id="chain-ladder">
+        <!-- 8 steps generated dynamically -->
+      </div>
+
+      <!-- Right: Main Host Controls & Players -->
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Bank & Chain Controls -->
+        <div class="header-glass" style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">TOTAL BANKED MONEY:</div>
+            <div style="font-family: var(--font-display); font-size: 2.8rem; color: #34d399; font-weight: 900;" id="total-bank-val">$0</div>
+          </div>
+          <button id="bank-btn" class="btn btn-primary" style="font-size: 1.4rem; padding: 14px 32px; background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);">
+            🏦 BANK!
+          </button>
+          <div style="display: flex; gap: 8px;">
+            <button id="correct-btn" class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 20px;">✅ Correct</button>
+            <button id="wrong-btn" class="btn danger-light" style="font-size: 1.1rem; padding: 12px 20px;">❌ Wrong</button>
+          </div>
+        </div>
+
+        <!-- Contestants Grid (6 Contestants) -->
+        <div class="players-grid" id="players-grid">
+          <!-- 6 Player Cards generated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="peer-connection.js"></script>
+  <script src="audio.js"></script>
+  <script src="weakestlink-app.js"></script>
+</body>
+</html>

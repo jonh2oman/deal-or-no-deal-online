@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wheel of Fortune - Live Stage TV Display</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+      background: #020617;
+    }
+
+    .spectator-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      padding: 24px 36px;
+      box-sizing: border-box;
+      gap: 20px;
+    }
+
+    .category-banner-tv {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.4) 0%, rgba(14, 165, 233, 0.2) 100%);
+      border: 2px solid var(--sky-blue);
+      border-radius: 16px;
+      padding: 12px 24px;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fef08a;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      box-shadow: var(--shadow-neon);
+    }
+
+    .puzzle-grid-tv {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      border: 2px solid var(--glass-border);
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    }
+
+    .puzzle-row-tv {
+      display: flex;
+      gap: 10px;
+    }
+
+    .puzzle-tile-tv {
+      width: 64px;
+      height: 80px;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: transparent;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .puzzle-tile-tv.letter-space {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+
+    .puzzle-tile-tv.hidden-letter {
+      background: #1e293b;
+      border-color: var(--sky-blue);
+      box-shadow: inset 0 0 16px rgba(56, 189, 248, 0.4);
+      color: transparent;
+    }
+
+    .puzzle-tile-tv.revealed {
+      background: linear-gradient(135deg, #fef08a 0%, #eab308 100%);
+      border-color: #facc15;
+      color: #0f172a;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      animation: flipTile 0.5s ease-out;
+    }
+
+    /* Bottom Contestant Podiums */
+    .podiums-bar-tv {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    .podium-tv {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 16px 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .podium-tv.active-turn {
+      border-color: #facc15;
+      background: rgba(234, 179, 8, 0.2);
+      box-shadow: 0 0 30px rgba(234, 179, 8, 0.4);
+      transform: scale(1.03);
+    }
+
+    .podium-name-tv {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .podium-score-tv {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: #34d399;
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="spectator-container">
+    <!-- Header Title & Category -->
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-size: 2.5rem;">🎡</span>
+        <h1 style="font-family: var(--font-display); font-size: 2.5rem; margin: 0; color: #ffffff; letter-spacing: 2px;">
+          WHEEL OF FORTUNE
+        </h1>
+      </div>
+      <div class="category-banner-tv" id="category-display-tv">
+        CATEGORY: PHRASE
+      </div>
+    </div>
+
+    <!-- 3-Row Puzzle Grid TV -->
+    <div class="puzzle-grid-tv" id="puzzle-grid-tv">
+      <!-- 3 rows populated by wheel-spectator.js -->
+    </div>
+
+    <!-- Contestant Podiums TV -->
+    <div class="podiums-bar-tv">
+      <div class="podium-tv" id="podium-tv-0">
+        <div class="podium-name-tv" id="p1-name-tv">CONTESTANT 1</div>
+        <div class="podium-score-tv" id="p1-score-tv">$0</div>
+      </div>
+      <div class="podium-tv" id="podium-tv-1">
+        <div class="podium-name-tv" id="p2-name-tv">CONTESTANT 2</div>
+        <div class="podium-score-tv" id="p2-score-tv">$0</div>
+      </div>
+      <div class="podium-tv" id="podium-tv-2">
+        <div class="podium-name-tv" id="p3-name-tv">CONTESTANT 3</div>
+        <div class="podium-score-tv" id="p3-score-tv">$0</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="wheel-spectator.js"></script>
+</body>
+</html>

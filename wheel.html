@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wheel of Fortune - Stage Host Control</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Wheel Specific Layout */
+    .wheel-main-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .puzzle-board-glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .category-banner {
+      background: rgba(2, 132, 199, 0.25);
+      border: 1px solid var(--sky-blue);
+      border-radius: 12px;
+      padding: 8px 16px;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fef08a;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .puzzle-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .puzzle-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .puzzle-tile {
+      width: 44px;
+      height: 54px;
+      border-radius: 6px;
+      background: #0f172a;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: transparent;
+      user-select: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .puzzle-tile.letter-space {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+
+    .puzzle-tile.hidden-letter {
+      background: #1e293b;
+      border-color: var(--sky-blue);
+      box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.3);
+      color: transparent;
+    }
+
+    .puzzle-tile.revealed {
+      background: linear-gradient(135deg, #fef08a 0%, #eab308 100%);
+      border-color: #facc15;
+      color: #0f172a;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      animation: flipTile 0.5s ease-out;
+    }
+
+    @keyframes flipTile {
+      0% { transform: rotateY(90deg); }
+      100% { transform: rotateY(0deg); }
+    }
+
+    /* Letter Keyboard Bank */
+    .keyboard-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+    }
+
+    .key-btn {
+      width: 42px;
+      height: 44px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--glass-border);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .key-btn:hover:not(:disabled) {
+      background: var(--sky-blue);
+      color: #0f172a;
+      transform: translateY(-2px);
+    }
+
+    .key-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      background: rgba(0, 0, 0, 0.4);
+      border-color: transparent;
+    }
+
+    .key-btn.vowel {
+      border-color: #facc15;
+    }
+
+    /* Wheel Sidebar */
+    .wheel-sidebar {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #wheel-canvas {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6), 0 0 30px var(--glass-glow);
+    }
+
+    .wheel-pointer {
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 24px solid #ef4444;
+      margin-bottom: -16px;
+      z-index: 10;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <!-- Atmospheric Spotlights -->
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="stage-badge" id="brand-tag-code">
+          <span class="badge-text" id="brand-tag-text">WHEEL-1</span>
+          <span class="badge-icon">🎡</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">WHEEL OF FORTUNE</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Host Stage Controller</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool" title="Change Stage Theme Palette">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+        </select>
+
+        <button id="qr-btn" class="tool-btn admin-highlight" title="Show QR Code for Mobile Buzzers & Voting">
+          <span class="btn-icon">📱</span> <span class="btn-text">Mobile & QR</span>
+        </button>
+        <button id="spectator-btn" class="tool-btn" title="Toggle Big Screen Spectator Mode">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn" title="Toggle Audio">
+          <span class="btn-icon" id="sound-icon">📺</span> <span class="btn-text" id="sound-text">PA Audio Only</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light" title="Reset Current Round">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Puzzle</span>
+        </button>
+      </div>
+
+      <!-- Integrated Header Soundboard Row -->
+      <div class="header-soundboard-row">
+        <span class="soundboard-row-label">🎵 STAGE SOUNDBOARD:</span>
+        <div class="soundboard-buttons-row">
+          <button class="sound-fx-btn btn-sm" data-sound="chime">🔔 Letter Ding</button>
+          <button class="sound-fx-btn btn-sm" data-sound="daily">🎲 Wheel Spin</button>
+          <button class="sound-fx-btn btn-sm" data-sound="buzzer">🚨 Bankrupt / Wrong</button>
+          <button class="sound-fx-btn btn-sm" data-sound="win">🏆 Solve Fanfare</button>
+          <button class="sound-fx-btn btn-sm" data-sound="theme">🎺 Theme Music</button>
+          <button class="sound-fx-btn btn-sm danger" data-sound="stop">🛑 Silence All</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Contestant Scoreboards Bar -->
+    <div class="feud-scoreboard-bar">
+      <!-- Player 1 -->
+      <div class="team-score-card" id="card-p1">
+        <input type="text" id="p1-name" class="team-name-input" value="CONTESTANT 1">
+        <div class="team-score-val" id="p1-round-score">$0</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Total: <span id="p1-total-score">$0</span></div>
+        <button class="btn btn-primary" onclick="wheelApp.setActiveTurn(0)" style="margin-top: 6px; width: 100%;">⭐ Active Turn</button>
+      </div>
+
+      <!-- Player 2 -->
+      <div class="team-score-card" id="card-p2">
+        <input type="text" id="p2-name" class="team-name-input" value="CONTESTANT 2">
+        <div class="team-score-val" id="p2-round-score">$0</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Total: <span id="p2-total-score">$0</span></div>
+        <button class="btn btn-primary" onclick="wheelApp.setActiveTurn(1)" style="margin-top: 6px; width: 100%;">⭐ Active Turn</button>
+      </div>
+
+      <!-- Player 3 -->
+      <div class="team-score-card" id="card-p3">
+        <input type="text" id="p3-name" class="team-name-input" value="CONTESTANT 3">
+        <div class="team-score-val" id="p3-round-score">$0</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Total: <span id="p3-total-score">$0</span></div>
+        <button class="btn btn-primary" onclick="wheelApp.setActiveTurn(2)" style="margin-top: 6px; width: 100%;">⭐ Active Turn</button>
+      </div>
+    </div>
+
+    <!-- Main Board & Wheel Layout -->
+    <div class="wheel-main-container">
+      <!-- Left: Puzzle Board & Keyboard -->
+      <div class="puzzle-board-glass">
+        <div class="category-banner" id="category-display">
+          CATEGORY: PHRASE
+        </div>
+
+        <!-- 3-Row Puzzle Grid -->
+        <div class="puzzle-grid" id="puzzle-grid-container">
+          <!-- Dynamically populated by wheel-app.js -->
+        </div>
+
+        <!-- Letter Selection Keyboard Bank -->
+        <div class="keyboard-bank" id="keyboard-bank">
+          <!-- A-Z Buttons populated by JS -->
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding: 6px 12px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+          <span style="font-size: 0.9rem; color: #cbd5e1;">Active Wheel Spin Value: <strong id="spin-value-tag" style="color: #fef08a; font-size: 1.2rem;">$0</strong></span>
+          <div style="display: flex; gap: 8px;">
+            <button id="solve-puzzle-btn" class="btn btn-primary">💡 Solve Puzzle</button>
+            <button id="bankrupt-btn" class="btn danger-light">💥 Bankrupt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Interactive Canvas Wheel -->
+      <div class="wheel-sidebar">
+        <div style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: var(--sky-blue);">
+          SPIN THE WHEEL
+        </div>
+        <div class="wheel-pointer"></div>
+        <canvas id="wheel-canvas" width="280" height="280"></canvas>
+        <button id="spin-wheel-btn" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px;">
+          🎯 SPIN WHEEL
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="peer-connection.js"></script>
+  <script src="audio.js"></script>
+  <script src="wheel-app.js"></script>
+</body>
+</html>

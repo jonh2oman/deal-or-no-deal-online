@@ -283,6 +283,68 @@ class SoundEngine {
   playTheme() {
     this.playMp3OrSynth('theme');
   }
+
+  // Family Feud Survey Ding (Answer Reveal)
+  playDing() {
+    if (this.muted) return;
+    this.initContext();
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const now = this.ctx.currentTime;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1046.50, now); // C6 bell tone
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.8);
+  }
+
+  // Family Feud Strike / Wrong Answer Buzzer
+  playBuzzer() {
+    if (this.muted) return;
+    this.initContext();
+    if (!this.ctx) return;
+    const osc1 = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const now = this.ctx.currentTime;
+    osc1.type = 'sawtooth';
+    osc2.type = 'square';
+    osc1.frequency.setValueAtTime(130, now); // Harsh low 130Hz
+    osc2.frequency.setValueAtTime(138, now); // Dissonant 138Hz
+    gain.gain.setValueAtTime(0.35, now);
+    gain.gain.linearRampToValueAtTime(0.35, now + 0.6);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 0.7);
+    osc2.stop(now + 0.7);
+  }
+
+  // Fast Money Ticking Clock
+  playClock() {
+    if (this.muted) return;
+    this.initContext();
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const now = this.ctx.currentTime;
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(800, now);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.05);
+  }
 }
 
+// Global Sound Engine Singleton
 const sounds = new SoundEngine();

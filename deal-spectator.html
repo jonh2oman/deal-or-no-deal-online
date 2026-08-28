@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal or No Deal - Stage Display</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Spectator Only Clean Stage Styling */
+    body {
+      font-size: 120%;
+      overflow: hidden;
+    }
+    .app-container {
+      max-width: 1800px;
+      padding: 16px 24px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    /* Hide all control toolbar items */
+    .toolbar, .admin-actions-bar, .close-modal-btn {
+      display: none !important;
+    }
+    .header-glass {
+      justify-content: center;
+      padding: 16px 32px;
+    }
+    .prize-card {
+      padding: 12px 16px;
+      font-size: 1.1rem;
+    }
+    .case-number {
+      font-size: 2.8rem;
+    }
+    .status-content h2 {
+      font-size: 1.5rem;
+    }
+    .status-content p {
+      font-size: 1.05rem;
+    }
+    .offer-amount {
+      font-size: 4.8rem;
+    }
+  </style>
+</head>
+<body class="spectator-view">
+  <!-- Confetti Overlay Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container" id="app">
+    <!-- Header Navigation (Branding Only, No Controls) -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="flight-badge">
+          <span class="badge-code" id="brand-tag-code">DND-15</span>
+          <span class="badge-icon">✈️</span>
+        </div>
+        <div class="title-meta" style="text-align: center;">
+          <h1 class="main-title" id="brand-event-title">DEAL OR NO DEAL</h1>
+          <span class="sub-title" id="brand-event-subtitle">LIVE STAGE GAME SHOW</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Board Container -->
+    <main class="game-stage">
+      <!-- Left Column: Low Value Prize Board -->
+      <aside class="prize-column low-prizes" id="low-prize-board">
+        <div class="column-header">LOW VALUES</div>
+        <div class="prize-list" id="low-prizes-list"></div>
+      </aside>
+
+      <!-- Center Stage: Flight Deck & Briefcases -->
+      <section class="flight-deck">
+        <div class="status-banner" id="status-banner">
+          <div class="status-radar-icon"></div>
+          <div class="status-content">
+            <h2 id="status-heading">LIVE STAGE GAME IN PROGRESS</h2>
+            <p id="status-subtext">Contestant is selecting flight briefcases...</p>
+          </div>
+        </div>
+
+        <div class="briefcase-grid" id="briefcase-grid"></div>
+      </section>
+
+      <!-- Right Column: High Value Prize Board & Sealed Case Podium -->
+      <aside class="prize-column high-prizes" id="high-prize-board">
+        <div class="column-header">HIGH VALUES</div>
+        <div class="prize-list" id="high-prizes-list"></div>
+
+        <div class="player-podium" id="player-podium">
+          <div class="podium-glass">
+            <span class="podium-label">SEALED CASE</span>
+            <div class="podium-case-slot" id="player-case-slot">
+              <span class="empty-slot-text">No Case Chosen</span>
+            </div>
+            <div class="podium-status" id="round-indicator">ROUND 1</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- MODAL 0: Case Reveal Display -->
+  <div class="modal-overlay hidden" id="case-reveal-modal">
+    <div class="modal-glass reveal-modal-content">
+      <div class="reveal-header center-text">
+        <span class="call-badge" id="reveal-case-badge">BRIEFCASE REVEALED</span>
+        <h2 id="reveal-case-title">CASE #--</h2>
+      </div>
+
+      <div class="reveal-prize-box" id="reveal-prize-box">
+        <span class="reveal-prize-label">REVEALED PRIZE VALUE</span>
+        <div class="reveal-prize-value" id="reveal-prize-value">---</div>
+        <p class="reveal-status-note" id="reveal-status-note">Eliminated from the stage board!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 1: Flight Controller Banker Call Display -->
+  <div class="modal-overlay hidden" id="banker-modal">
+    <div class="modal-glass banker-modal-content">
+      <div class="radar-scan-wrapper">
+        <div class="radar-circle pulse-ring"></div>
+        <div class="tower-icon">📡</div>
+      </div>
+
+      <div class="banker-header">
+        <span class="call-badge" id="offer-type-badge">INCOMING TRANSMISSION</span>
+        <h2 id="banker-title-heading">FLIGHT CONTROL CALLING...</h2>
+        <p class="banker-sub">Official Deal Offer for the Contestant</p>
+      </div>
+
+      <div class="banker-offer-card" id="banker-offer-card">
+        <span class="offer-label" id="offer-label-heading">BANKER OFFER</span>
+        <div class="offer-amount" id="banker-offer-display">$0</div>
+        <div class="offer-physical-prize hidden" id="banker-physical-display"></div>
+        <div class="offer-ev-meta" id="banker-ev-meta">Board Average: $0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Swap Comparison Display -->
+  <div class="modal-overlay hidden" id="swap-modal">
+    <div class="modal-glass swap-modal-content">
+      <div class="modal-header center-text">
+        <span class="call-badge gold-badge">FINAL DECISION</span>
+        <h2>THE FINAL FLIGHT CHOICE!</h2>
+        <p>Two cases remain sealed on the stage floor.</p>
+      </div>
+
+      <div class="swap-cases-comparison">
+        <div class="comparison-card">
+          <span class="card-tag">CONTESTANT CASE</span>
+          <div class="case-num-large" id="swap-player-case-num">#--</div>
+        </div>
+
+        <div class="versus-divider">VS</div>
+
+        <div class="comparison-card">
+          <span class="card-tag">OTHER CASE</span>
+          <div class="case-num-large" id="swap-other-case-num">#--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Result Modal -->
+  <div class="modal-overlay hidden" id="result-modal">
+    <div class="modal-glass result-modal-content">
+      <div class="result-icon-burst" id="result-icon">🏆</div>
+      <h2 id="result-title">CONGRATULATIONS!</h2>
+      <p id="result-subtitle">Game Show Winner!</p>
+
+      <div class="result-prize-box">
+        <span class="result-prize-label">TOTAL PRIZE WON</span>
+        <div class="result-prize-value" id="result-prize-value">$0</div>
+        <div class="result-case-info" id="result-case-info">---</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
+  <script src="banker.js"></script>
+  <script src="spectator.js"></script>
+</body>
+</html>

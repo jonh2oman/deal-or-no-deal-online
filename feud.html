@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="runway-blue">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Feud - Host Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Family Feud Specific Host Control Styles */
+    .feud-scoreboard-bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 20px;
+      align-items: center;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .team-score-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .team-score-card.team-right {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .team-name-input {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--sky-blue);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 4px 12px;
+      width: 220px;
+    }
+
+    .team-score-val {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 0 15px var(--sky-blue);
+    }
+
+    .round-bank-card {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid var(--sky-blue);
+      border-radius: 16px;
+      padding: 10px 24px;
+      box-shadow: var(--shadow-neon);
+    }
+
+    .bank-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .bank-val {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: #fef08a;
+      text-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+    }
+
+    .feud-board-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .feud-answer-slot-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .feud-answer-slot-card.revealed {
+      border-color: var(--sky-blue);
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    .slot-idx {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--sky-blue);
+      width: 32px;
+    }
+
+    .slot-text {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      flex: 1;
+    }
+
+    .slot-pts {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fef08a;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 14px;
+      border-radius: 8px;
+    }
+
+    .feud-action-deck {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .strike-btn-red {
+      background: linear-gradient(135deg, #ef4444, #991b1b) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .strike-btn-red:hover {
+      background: linear-gradient(135deg, #f87171, #dc2626) !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Ambient Stage Spotlights -->
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container">
+    <!-- Header Navigation -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="flight-badge">
+          <span class="badge-code" id="brand-tag-code">FEUD-15</span>
+          <span class="badge-icon">👪</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">FAMILY FEUD</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Host Stage Controller</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool" title="Change Stage Theme Palette">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+        </select>
+
+        <button id="spectator-btn" class="tool-btn" title="Toggle Big Screen Spectator Mode">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn" title="Toggle Audio">
+          <span class="btn-icon" id="sound-icon">📺</span> <span class="btn-text" id="sound-text">PA Audio Only</span>
+        </button>
+        <button id="admin-btn" class="tool-btn admin-highlight" title="Question Manager & Settings">
+          <span class="btn-icon">⚙️</span> <span class="btn-text">Questions & Settings</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light" title="Reset Current Round">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Round</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Stage Scoreboard Bar -->
+    <div class="feud-scoreboard-bar">
+      <div class="team-score-card">
+        <input type="text" id="team1-name" class="team-name-input" value="TEAM 1">
+        <div class="team-score-val" id="team1-score">0</div>
+        <button id="award-team1-btn" class="btn btn-primary" type="button">🏆 Award Bank to Team 1</button>
+      </div>
+
+      <div class="round-bank-card">
+        <div class="bank-label">CURRENT ROUND BANK</div>
+        <div class="bank-val" id="round-bank-val">0</div>
+        <div style="margin-top: 6px; display: flex; gap: 6px; justify-content: center;">
+          <button id="mult-1x-btn" class="settings-tab-btn active" type="button">1x Single</button>
+          <button id="mult-2x-btn" class="settings-tab-btn" type="button">2x Double</button>
+          <button id="mult-3x-btn" class="settings-tab-btn" type="button">3x Triple</button>
+        </div>
+      </div>
+
+      <div class="team-score-card team-right">
+        <input type="text" id="team2-name" class="team-name-input" value="TEAM 2" style="text-align: right;">
+        <div class="team-score-val" id="team2-score">0</div>
+        <button id="award-team2-btn" class="btn btn-primary" type="button">🏆 Award Bank to Team 2</button>
+      </div>
+    </div>
+
+    <!-- Active Question & Controls -->
+    <div class="header-glass" style="margin-bottom: 20px; padding: 16px 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 10px;">
+        <span class="podium-status" id="round-heading-tag">ROUND 1 OF 4</span>
+        <select id="question-select" class="input-field select-tool" style="max-width: 450px;">
+          <!-- Questions populated dynamically -->
+        </select>
+      </div>
+      <h2 id="active-question-text" style="font-family: var(--font-display); font-size: 1.5rem; color: #ffffff;">
+        Loading survey question...
+      </h2>
+    </div>
+
+    <!-- Survey Answer Slots Grid -->
+    <div class="feud-board-container" id="feud-answers-grid">
+      <!-- 8 Answer Cards generated dynamically -->
+    </div>
+
+    <!-- Host Action Deck (Strikes & Sound Effects) -->
+    <div class="feud-action-deck">
+      <button id="strike-1-btn" class="btn strike-btn-red" type="button">❌ 1 STRIKE</button>
+      <button id="strike-2-btn" class="btn strike-btn-red" type="button">❌❌ 2 STRIKES</button>
+      <button id="strike-3-btn" class="btn strike-btn-red" type="button">❌❌❌ 3 STRIKES</button>
+      <button id="clear-strikes-btn" class="btn btn-secondary" type="button">🧹 Clear Strikes</button>
+      <button id="reveal-all-btn" class="btn btn-secondary" type="button">👁️ Reveal All Answers</button>
+      <button id="toggle-fast-money-btn" class="btn btn-primary" type="button">⏱️ Fast Money Round</button>
+    </div>
+
+    <!-- Soundboard Console -->
+    <div class="soundboard-glass">
+      <div class="soundboard-header">
+        <span>🎵 STAGE SOUNDBOARD CONSOLE</span>
+      </div>
+      <div class="soundboard-buttons">
+        <button class="sound-fx-btn" data-sound="ding">🔔 Reveal Ding</button>
+        <button class="sound-fx-btn" data-sound="buzzer">🚨 Wrong Buzzer</button>
+        <button class="sound-fx-btn" data-sound="clock">⏱️ Clock Tick</button>
+        <button class="sound-fx-btn" data-sound="win">🏆 Win Fanfare</button>
+        <button class="sound-fx-btn" data-sound="theme">🎺 Theme Music</button>
+        <button class="sound-fx-btn danger" data-sound="stop">🛑 Silence All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Settings & Question Manager -->
+  <div class="modal-overlay hidden" id="admin-modal">
+    <div class="modal-glass admin-modal-content">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2>⚙️ Family Feud Settings & Question Bank</h2>
+          <p>Customize event branding, stage palette, and manage survey questions.</p>
+        </div>
+        <button id="close-admin-btn" class="close-modal-btn" type="button">&times;</button>
+      </div>
+
+      <div class="settings-nav-tabs">
+        <button id="tab-branding-btn" class="settings-tab-btn active" type="button">🏷️ Event Branding</button>
+        <button id="tab-questions-btn" class="settings-tab-btn" type="button">📋 Survey Questions</button>
+      </div>
+
+      <div class="settings-modal-body">
+        <div id="section-branding" class="settings-tab-section">
+          <div class="branding-inputs-grid">
+            <div class="input-group">
+              <label>Main Event / App Title:</label>
+              <input type="text" id="setting-event-title" class="input-field" placeholder="e.g. FAMILY FEUD SHOWDOWN">
+            </div>
+            <div class="input-group">
+              <label>Sub-Title / Location:</label>
+              <input type="text" id="setting-event-subtitle" class="input-field" placeholder="e.g. LIVE STAGE PRODUCTION">
+            </div>
+            <div class="input-group">
+              <label>Event Tag / Code:</label>
+              <input type="text" id="setting-event-tag" class="input-field" placeholder="e.g. FEUD-15">
+            </div>
+            <div class="input-group full-width-group">
+              <label class="toggle-switch-label">
+                <input type="checkbox" id="setting-show-tag" checked>
+                <span>Display Header Event Tag Badge on Stage</span>
+              </label>
+            </div>
+            <div class="input-group">
+              <label>Default Stage Theme Palette:</label>
+              <select id="setting-theme" class="input-field select-tool">
+                <option value="runway-blue">✈️ Runway Blue</option>
+                <option value="golden-sunset">🌅 Golden Sunset</option>
+                <option value="night-radar">📡 Night Radar</option>
+                <option value="crimson-vip">🍷 Crimson VIP</option>
+                <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+                <option value="emerald-gala">💎 Emerald Gala</option>
+                <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-questions" class="settings-tab-section hidden">
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+            Preset survey questions loaded automatically. You can switch questions using the top dropdown during the game.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="save-prizes-btn" class="btn btn-primary btn-large" type="button">
+          <span>💾</span> Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="feud-app.js"></script>
+</body>
+</html>

@@ -1,32 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="runway-blue">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deal or No Deal - Host Control</title>
+  <title>Stage Game Show Suite - Host Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Hub Landing Page Specific Styling */
+    .hub-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hub-hero {
+      text-align: center;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px 30px;
+      box-shadow: var(--shadow-glass);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hub-hero-title {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--sky-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .hub-hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto 24px auto;
+    }
+
+    .hub-quick-toolbar {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 28px;
+    }
+
+    .game-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .game-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--sky-blue);
+      box-shadow: var(--shadow-neon);
+    }
+
+    .game-card-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .game-card-icon {
+      font-size: 3.5rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .game-card-info h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .game-card-info p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .game-features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .feature-tag {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      color: var(--sky-blue);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .game-card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .hub-footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 20px 0;
+    }
+  </style>
 </head>
 <body>
-  <!-- Confetti Overlay Canvas -->
-  <canvas id="confetti-canvas"></canvas>
-
+  <!-- Ambient Stage Spotlights -->
   <div class="stage-spotlight-left"></div>
   <div class="stage-spotlight-right"></div>
 
-  <div class="app-container" id="app">
+  <div class="hub-container">
     <!-- Header Navigation -->
     <header class="header-glass">
       <div class="brand-group">
-        <div class="flight-badge">
-          <span class="badge-code" id="brand-tag-code">DND-15</span>
-          <span class="badge-icon">✈️</span>
+        <div class="flight-badge" id="hub-flight-badge">
+          <span class="badge-code" id="brand-tag-code">SUITE-15</span>
+          <span class="badge-icon">🎭</span>
         </div>
         <div class="brand-titles">
-          <h1 id="brand-event-title">DEAL OR NO DEAL</h1>
-          <p class="subtitle" id="brand-event-subtitle">Official Stage Control Panel</p>
+          <h1 id="brand-event-title">STAGE GAME SHOW SUITE</h1>
+          <p class="subtitle" id="brand-event-subtitle">Live Event & Party Production Center</p>
         </div>
       </div>
 
@@ -42,335 +180,215 @@
           <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
         </select>
 
-        <select id="ambient-select" class="tool-btn select-tool" title="Ambient Stage Soundscape">
-          <option value="none">🔇 Ambient OFF</option>
-          <option value="flight-hum">✈️ Jet Cabin Hum</option>
-          <option value="radar-pulse">📡 Radar Pulse</option>
-        </select>
-
-        <button id="peek-toggle-btn" class="tool-btn peek-highlight" title="Toggle Host Secret X-Ray Case Peek Mode">
-          <span class="btn-icon" id="peek-icon">👁️</span> <span class="btn-text" id="peek-text">Host Peek OFF</span>
-        </button>
-        <button id="spectator-btn" class="tool-btn" title="Toggle Big Screen Spectator Mode">
-          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
-        </button>
-        <button id="sound-btn" class="tool-btn" title="Toggle Audio">
-          <span class="btn-icon" id="sound-icon">🔊</span> <span class="btn-text" id="sound-text">Sound ON</span>
-        </button>
-        <button id="admin-btn" class="tool-btn admin-highlight" title="Event Settings & Prize Setup">
-          <span class="btn-icon">⚙️</span> <span class="btn-text">Settings & Prizes</span>
-        </button>
-        <button id="reset-btn" class="tool-btn danger-light" title="Reset Current Round">
-          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Round</span>
+        <button id="admin-btn" class="tool-btn admin-highlight" title="Global Event Settings">
+          <span class="btn-icon">⚙️</span> <span class="btn-text">Global Settings</span>
         </button>
       </div>
     </header>
 
-    <!-- Host Soundboard Control Panel Console -->
-    <div class="soundboard-console">
-      <span class="console-label">🎙️ SOUNDBOARD CONSOLE:</span>
-      <div class="soundboard-buttons">
-        <button class="sound-fx-btn" data-sound="open">🎵 Reveal</button>
-        <button class="sound-fx-btn" data-sound="ring">📞 Ring</button>
-        <button class="sound-fx-btn" data-sound="banker">📡 Tension</button>
-        <button class="sound-fx-btn" data-sound="deal">🤝 Deal</button>
-        <button class="sound-fx-btn" data-sound="noDeal">🚫 No Deal</button>
-        <button class="sound-fx-btn" data-sound="win">🏆 Fanfare</button>
-        <button class="sound-fx-btn" data-sound="theme">🎺 Theme</button>
-        <button class="sound-fx-btn danger-sound" data-sound="stop">🛑 Silence</button>
+    <!-- Hero Banner -->
+    <div class="hub-hero">
+      <h2 class="hub-hero-title">SELECT YOUR STAGE GAME SHOW</h2>
+      <p class="hub-hero-subtitle">
+        Launch host controls or cast spectator views directly to big-screen TVs and projectors with sub-16ms real-time synchronization.
+      </p>
+      <div class="hub-quick-toolbar">
+        <span class="feature-tag">📺 Dual-Monitor Ready</span>
+        <span class="feature-tag">🎨 7 Theme Palettes</span>
+        <span class="feature-tag">🎵 Live Soundboard Engine</span>
+        <span class="feature-tag">🏷️ Custom Event Branding</span>
       </div>
     </div>
 
-    <!-- Main Game Board Container -->
-    <main class="game-stage">
-      <!-- Left Column: Low Value Prize Board (Cases 1-8) -->
-      <aside class="prize-column low-prizes" id="low-prize-board">
-        <div class="column-header">LOW VALUES</div>
-        <div class="prize-list" id="low-prizes-list">
-          <!-- Populated by JavaScript -->
-        </div>
-      </aside>
-
-      <!-- Center Stage: Flight Deck & Briefcases -->
-      <section class="flight-deck">
-        <!-- Status & Command Teleprompter Banner -->
-        <div class="status-banner host-teleprompter" id="status-banner">
-          <div class="status-radar-icon"></div>
-          <div class="status-content">
-            <div class="teleprompter-badge">🎙️ HOST STAGE TELEPROMPTER & BANTER</div>
-            <h2 id="status-heading">WELCOME TO GANDER DEAL OR NO DEAL</h2>
-            <p id="status-subtext">Click any briefcase to select your personal case to keep until the end!</p>
-            <div class="host-banter-quote" id="host-banter-quote">"Fasten your seatbelts folks, we're in for a high-flying game today!"</div>
+    <!-- Interactive Game Cards Grid -->
+    <div class="games-grid">
+      <!-- Game 1: Deal or No Deal -->
+      <div class="game-card">
+        <div class="game-card-header">
+          <div class="game-card-icon">🧳</div>
+          <div class="game-card-info">
+            <h2>Deal or No Deal</h2>
+            <p>High-stakes 15-briefcase elimination game show with 3D metallic briefcases, secret Host X-Ray Peek, and custom banker offers.</p>
           </div>
         </div>
 
-        <!-- Briefcase Grid (15 Cases) -->
-        <div class="briefcase-grid" id="briefcase-grid">
-          <!-- Populated dynamically -->
-        </div>
-      </section>
-
-      <!-- Right Column: High Value Prize Board (Cases 9-15) & Sealed Case Podium -->
-      <aside class="prize-column high-prizes" id="high-prize-board">
-        <div class="column-header">HIGH VALUES</div>
-        <div class="prize-list" id="high-prizes-list">
-          <!-- Populated by JavaScript -->
+        <div class="game-features-list">
+          <span class="feature-tag">🧳 3D Briefcase Flip</span>
+          <span class="feature-tag">👁️ Host X-Ray Peek</span>
+          <span class="feature-tag">📞 Banker EV Offer Engine</span>
         </div>
 
-        <!-- Flight Deck Footer: Player's Case Podium -->
-        <div class="player-podium" id="player-podium">
-          <div class="podium-glass">
-            <span class="podium-label">SEALED CASE</span>
-            <div class="podium-case-slot" id="player-case-slot">
-              <span class="empty-slot-text">No Case Chosen</span>
-            </div>
-            <div class="podium-status" id="round-indicator">ROUND 1</div>
+        <div class="game-card-actions">
+          <a href="deal.html" class="btn btn-primary" target="_self">
+            <span>🎛️</span> Host Control
+          </a>
+          <a href="deal-spectator.html" class="btn btn-secondary" target="_blank">
+            <span>📺</span> Spectator TV
+          </a>
+        </div>
+      </div>
+
+      <!-- Game 2: Family Feud -->
+      <div class="game-card">
+        <div class="game-card-header">
+          <div class="game-card-icon">👪</div>
+          <div class="game-card-info">
+            <h2>Family Feud</h2>
+            <p>Survey says! Classic 8-slot mechanical answer board, Team 1 vs Team 2 scoreboards, Strike counter (❌ ❌ ❌), and Fast Money round!</p>
           </div>
         </div>
-      </aside>
-    </main>
 
-  </div>
+        <div class="game-features-list">
+          <span class="feature-tag">📋 8-Slot Flip Board</span>
+          <span class="feature-tag">❌ Giant Strike Overlays</span>
+          <span class="feature-tag">⏱️ Fast Money 200-Pt Round</span>
+        </div>
 
-  <!-- MODAL 0: Case Reveal Modal (Staging Step) -->
-  <div class="modal-overlay hidden" id="case-reveal-modal">
-    <div class="modal-glass reveal-modal-content">
-      <div class="reveal-header center-text">
-        <span class="call-badge" id="reveal-case-badge">BRIEFCASE REVEALED</span>
-        <h2 id="reveal-case-title">CASE #--</h2>
-      </div>
-
-      <div class="reveal-prize-box" id="reveal-prize-box">
-        <span class="reveal-prize-label">REVEALED PRIZE VALUE</span>
-        <div class="reveal-prize-value" id="reveal-prize-value">---</div>
-        <p class="reveal-status-note" id="reveal-status-note">Eliminated from the stage board!</p>
-      </div>
-
-      <div class="reveal-actions">
-        <button id="continue-reveal-btn" class="btn btn-primary btn-large btn-glow-active" style="width: 100%;">
-          <span id="continue-btn-text">CONTINUE GAME ✈️</span>
-        </button>
+        <div class="game-card-actions">
+          <a href="feud.html" class="btn btn-primary" target="_self">
+            <span>🎛️</span> Host Control
+          </a>
+          <a href="feud-spectator.html" class="btn btn-secondary" target="_blank">
+            <span>📺</span> Spectator TV
+          </a>
+        </div>
       </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="hub-footer">
+      Stage Game Show Suite &copy; 2026 | Dual-Screen Event Entertainment System
+    </footer>
   </div>
 
-  <!-- MODAL 1: Admin / Event Settings & Prize Setup Modal -->
+  <!-- Global Event Settings Modal -->
   <div class="modal-overlay hidden" id="admin-modal">
     <div class="modal-glass admin-modal-content">
       <div class="modal-header">
         <div class="modal-title-group">
-          <h2>⚙️ Event Settings & Prize Setup</h2>
-          <p>Customize your event branding, titles, and 15 game prizes.</p>
+          <h2>⚙️ Global Event Branding & Settings</h2>
+          <p>Customize your event name, stage theme palette, and header badge settings across all games.</p>
         </div>
-        <button class="close-modal-btn" id="close-admin-btn">&times;</button>
+        <button id="close-admin-btn" class="close-modal-btn" type="button">&times;</button>
       </div>
 
-      <!-- Settings Navigation Tabs -->
-      <div class="settings-nav-tabs">
-        <button id="tab-branding-btn" class="settings-tab-btn active" type="button">
-          <span>🏷️ Event Branding</span>
-        </button>
-        <button id="tab-prizes-btn" class="settings-tab-btn" type="button">
-          <span>🎁 15 Game Prizes</span>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <!-- Tab Section 1: Event Branding -->
-        <div id="section-branding" class="settings-tab-section">
-          <div class="branding-inputs-grid">
-            <div class="input-group">
-              <label>Main Event / App Title:</label>
-              <input type="text" id="setting-event-title" class="input-field" placeholder="e.g. DEAL OR NO DEAL STAGE SHOW">
-            </div>
-            <div class="input-group">
-              <label>Sub-Title / Location:</label>
-              <input type="text" id="setting-event-subtitle" class="input-field" placeholder="e.g. LIVE FESTIVAL STAGE GAME">
-            </div>
-            <div class="input-group">
-              <label>Event Tag / Code (e.g. DND-15):</label>
-              <input type="text" id="setting-event-tag" class="input-field" placeholder="e.g. DND-15">
-            </div>
-            <div class="input-group full-width-group">
-              <label class="toggle-switch-label">
-                <input type="checkbox" id="setting-show-tag" checked>
-                <span class="toggle-custom-box"></span>
-                <span>Display Header Event Tag Badge on Stage</span>
-              </label>
-            </div>
-            <div class="input-group">
-              <label>Banker / Host Call Title:</label>
-              <input type="text" id="setting-banker-name" class="input-field" placeholder="e.g. FLIGHT CONTROL or THE BANKER">
-            </div>
-            <div class="input-group">
-              <label>Default Stage Theme Palette:</label>
-              <select id="setting-theme" class="input-field select-tool">
-                <option value="runway-blue">✈️ Runway Blue (Classic Navy & Silver)</option>
-                <option value="golden-sunset">🌅 Golden Sunset (Gold & Warm Amber)</option>
-                <option value="night-radar">📡 Night Radar (Emerald Radar Green)</option>
-                <option value="crimson-vip">🍷 Crimson VIP (Hollywood Red & Ruby)</option>
-                <option value="neon-cyber">🔮 Neon Cyberpunk (Synthwave Purple & Pink)</option>
-                <option value="emerald-gala">💎 Emerald Gala (Royal Mint & Teal)</option>
-                <option value="midnight-amethyst">🌌 Midnight Amethyst (Electric Violet)</option>
-              </select>
-            </div>
+      <div class="settings-modal-body">
+        <div class="branding-inputs-grid">
+          <div class="input-group">
+            <label>Main Event / App Title:</label>
+            <input type="text" id="setting-event-title" class="input-field" placeholder="e.g. STAGE GAME SHOW SUITE">
           </div>
-        </div>
-
-        <!-- Tab Section 2: 15 Game Prizes -->
-        <div id="section-prizes" class="settings-tab-section hidden">
-          <div class="admin-actions-bar">
-            <button id="reset-default-prizes-btn" class="btn btn-secondary" type="button">
-              <span>🔄</span> Reset Default Prizes
-            </button>
-            <span class="prizes-count-tag">15 Total Prizes</span>
+          <div class="input-group">
+            <label>Sub-Title / Location:</label>
+            <input type="text" id="setting-event-subtitle" class="input-field" placeholder="e.g. LIVE EVENT PRODUCTION">
           </div>
-
-          <form id="prize-form" class="prize-inputs-grid">
-            <!-- 15 Input Fields generated dynamically -->
-          </form>
+          <div class="input-group">
+            <label>Event Tag / Code (e.g. SUITE-15):</label>
+            <input type="text" id="setting-event-tag" class="input-field" placeholder="e.g. SUITE-15">
+          </div>
+          <div class="input-group full-width-group">
+            <label class="toggle-switch-label">
+              <input type="checkbox" id="setting-show-tag" checked>
+              <span class="toggle-custom-box"></span>
+              <span>Display Header Event Tag Badge on Stage</span>
+            </label>
+          </div>
+          <div class="input-group">
+            <label>Default Stage Theme Palette:</label>
+            <select id="setting-theme" class="input-field select-tool">
+              <option value="runway-blue">✈️ Runway Blue (Classic Navy & Silver)</option>
+              <option value="golden-sunset">🌅 Golden Sunset (Gold & Warm Amber)</option>
+              <option value="night-radar">📡 Night Radar (Emerald Radar Green)</option>
+              <option value="crimson-vip">🍷 Crimson VIP (Hollywood Red & Ruby)</option>
+              <option value="neon-cyber">🔮 Neon Cyberpunk (Synthwave Purple & Pink)</option>
+              <option value="emerald-gala">💎 Emerald Gala (Royal Mint & Teal)</option>
+              <option value="midnight-amethyst">🌌 Midnight Amethyst (Electric Violet)</option>
+            </select>
+          </div>
         </div>
       </div>
 
       <div class="modal-footer">
         <button id="save-prizes-btn" class="btn btn-primary btn-large" type="button">
-          <span>💾</span> Save Settings & Update Game
+          <span>💾</span> Save Global Event Settings
         </button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 2: Flight Controller / Banker Call Modal -->
-  <div class="modal-overlay hidden" id="banker-modal">
-    <div class="modal-glass banker-modal-content">
-      <div class="radar-scan-wrapper">
-        <div class="radar-circle pulse-ring"></div>
-        <div class="radar-sweep"></div>
-        <div class="tower-icon">📡</div>
-      </div>
+  <script>
+    // Hub Settings Logic
+    const DEFAULT_BRANDING = {
+      eventTitle: "STAGE GAME SHOW SUITE",
+      eventSubtitle: "Live Event & Party Production Center",
+      eventTag: "SUITE-15",
+      showEventTag: true,
+      defaultTheme: "runway-blue"
+    };
 
-      <div class="banker-header">
-        <span class="call-badge" id="offer-type-badge">INCOMING TRANSMISSION</span>
-        <h2 id="banker-title-heading">FLIGHT CONTROL CALLING...</h2>
-        <p class="banker-sub">Choose to present the suggested offer or customize a Host Offer!</p>
-      </div>
+    function loadBranding() {
+      try {
+        const saved = localStorage.getItem('gander_deal_branding');
+        if (saved) return Object.assign({}, DEFAULT_BRANDING, JSON.parse(saved));
+      } catch (e) {}
+      return Object.assign({}, DEFAULT_BRANDING);
+    }
 
-      <!-- Host Offer Mode Selector Tabs -->
-      <div class="offer-mode-tabs">
-        <button id="tab-suggested-btn" class="offer-tab-btn active" type="button">
-          <span>🤖 Suggested Offer</span>
-        </button>
-        <button id="tab-custom-btn" class="offer-tab-btn" type="button">
-          <span>🎙️ Custom Host Offer</span>
-        </button>
-      </div>
+    function applyBranding() {
+      const b = loadBranding();
+      document.getElementById('brand-event-title').textContent = b.eventTitle || "STAGE GAME SHOW SUITE";
+      document.getElementById('brand-event-subtitle').textContent = b.eventSubtitle || "Live Event & Party Production Center";
+      document.getElementById('brand-tag-code').textContent = b.eventTag || "SUITE-15";
+      
+      const badge = document.getElementById('hub-flight-badge');
+      if (badge) {
+        if (b.showEventTag === false) badge.classList.add('hidden');
+        else badge.classList.remove('hidden');
+      }
 
-      <!-- Custom Host Offer Form -->
-      <div id="custom-offer-box" class="custom-offer-box hidden">
-        <div class="custom-inputs-row">
-          <div class="input-group">
-            <label>Custom Cash Amount ($):</label>
-            <input type="number" step="1" id="custom-offer-amount" class="input-field" placeholder="e.g. 25">
-          </div>
-          <div class="input-group">
-            <label>Physical Prize / Bonus (Optional):</label>
-            <input type="text" id="custom-offer-prize" class="input-field" placeholder="e.g. Lawn Chair + Hoodie">
-          </div>
-        </div>
-        <button id="apply-custom-offer-btn" class="btn btn-secondary btn-small" type="button" style="margin-top: 10px; width: 100%;">
-          <span>✔️</span> Apply Host Offer
-        </button>
-      </div>
+      const theme = b.defaultTheme || "runway-blue";
+      document.documentElement.setAttribute('data-theme', theme);
+      document.body.setAttribute('data-theme', theme);
+      document.getElementById('theme-select').value = theme;
+    }
 
-      <!-- Active Offer Presentation Card -->
-      <div class="banker-offer-card" id="banker-offer-card">
-        <span class="offer-label" id="offer-label-heading">BANKER OFFER</span>
-        <div class="offer-amount" id="banker-offer-display">$0</div>
-        <div class="offer-physical-prize hidden" id="banker-physical-display"></div>
-        <div class="offer-ev-meta" id="banker-ev-meta">Expected Value: $0</div>
-      </div>
+    // Modal controls
+    const adminModal = document.getElementById('admin-modal');
+    document.getElementById('admin-btn').addEventListener('click', () => {
+      const b = loadBranding();
+      document.getElementById('setting-event-title').value = b.eventTitle || "";
+      document.getElementById('setting-event-subtitle').value = b.eventSubtitle || "";
+      document.getElementById('setting-event-tag').value = b.eventTag || "";
+      document.getElementById('setting-show-tag').checked = b.showEventTag !== false;
+      document.getElementById('setting-theme').value = b.defaultTheme || "runway-blue";
+      adminModal.classList.remove('hidden');
+    });
 
-      <!-- Stage Broadcast Push Action -->
-      <div class="broadcast-action-wrapper" style="width: 100%; margin: 4px 0 12px 0;">
-        <button id="broadcast-offer-btn" class="btn btn-primary btn-large btn-glow-active" type="button" style="width: 100%;">
-          <span>📡 PUSH OFFER TO SPECTATOR SCREEN</span>
-        </button>
-        <div id="broadcast-live-tag" class="broadcast-live-tag hidden">✔️ OFFER LIVE ON SPECTATOR STAGE</div>
-      </div>
+    document.getElementById('close-admin-btn').addEventListener('click', () => adminModal.classList.add('hidden'));
 
-      <div class="banker-decision-actions">
-        <button id="deal-btn" class="btn btn-deal">
-          <span class="btn-glow"></span>
-          <span class="deal-text">DEAL</span>
-          <span class="deal-sub">ACCEPT OFFER</span>
-        </button>
-        <button id="no-deal-btn" class="btn btn-nodeal">
-          <span class="btn-glow"></span>
-          <span class="deal-text">NO DEAL</span>
-          <span class="deal-sub">KEEP PLAYING</span>
-        </button>
-      </div>
-    </div>
-  </div>
+    document.getElementById('save-prizes-btn').addEventListener('click', () => {
+      const b = loadBranding();
+      b.eventTitle = document.getElementById('setting-event-title').value.trim() || "STAGE GAME SHOW SUITE";
+      b.eventSubtitle = document.getElementById('setting-event-subtitle').value.trim() || "Live Event & Party Production Center";
+      b.eventTag = document.getElementById('setting-event-tag').value.trim() || "SUITE-15";
+      b.showEventTag = document.getElementById('setting-show-tag').checked;
+      b.defaultTheme = document.getElementById('setting-theme').value;
+      
+      localStorage.setItem('gander_deal_branding', JSON.stringify(b));
+      applyBranding();
+      adminModal.classList.add('hidden');
+    });
 
-  <!-- MODAL 3: Swap or Keep Modal (Final 2 Cases) -->
-  <div class="modal-overlay hidden" id="swap-modal">
-    <div class="modal-glass swap-modal-content">
-      <div class="modal-header center-text">
-        <span class="call-badge gold-badge">FINAL DECISION</span>
-        <h2>THE FINAL FLIGHT CHOICE!</h2>
-        <p>Only two cases remain sealed: Your original case and the last remaining case.</p>
-      </div>
+    document.getElementById('theme-select').addEventListener('change', (e) => {
+      const theme = e.target.value;
+      document.documentElement.setAttribute('data-theme', theme);
+      document.body.setAttribute('data-theme', theme);
+      const b = loadBranding();
+      b.defaultTheme = theme;
+      localStorage.setItem('gander_deal_branding', JSON.stringify(b));
+    });
 
-      <div class="swap-cases-comparison">
-        <div class="comparison-card" id="swap-player-case-card">
-          <span class="card-tag">YOUR SEALED CASE</span>
-          <div class="case-num-large" id="swap-player-case-num">#--</div>
-        </div>
-
-        <div class="versus-divider">VS</div>
-
-        <div class="comparison-card" id="swap-other-case-card">
-          <span class="card-tag">OTHER REMAINING CASE</span>
-          <div class="case-num-large" id="swap-other-case-num">#--</div>
-        </div>
-      </div>
-
-      <div class="swap-actions">
-        <button id="keep-case-btn" class="btn btn-primary btn-large">
-          <span>🔒</span> KEEP YOUR CASE
-        </button>
-        <button id="swap-case-btn" class="btn btn-accent btn-large">
-          <span>🔄</span> SWAP CASES
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 4: Game Over / Victory Reveal Modal -->
-  <div class="modal-overlay hidden" id="result-modal">
-    <div class="modal-glass result-modal-content">
-      <div class="result-icon-burst" id="result-icon">🏆</div>
-      <h2 id="result-title">CONGRATULATIONS!</h2>
-      <p id="result-subtitle">Congratulations on your prize!</p>
-
-      <div class="result-prize-box">
-        <span class="result-prize-label" id="result-prize-label">TOTAL PRIZE WON</span>
-        <div class="result-prize-value" id="result-prize-value">$0</div>
-        <div class="result-case-info" id="result-case-info">Inside your case was: ---</div>
-      </div>
-
-      <div class="result-actions">
-        <button id="play-again-btn" class="btn btn-primary btn-large btn-glow-active">
-          <span>✈️</span> PLAY AGAIN / NEXT CONTESTANT
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="audio.js"></script>
-  <script src="banker.js"></script>
-  <script src="app.js"></script>
+    applyBranding();
+  </script>
 </body>
 </html>

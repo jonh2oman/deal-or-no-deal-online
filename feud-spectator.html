@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="runway-blue">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Feud - Stage Display</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      overflow: hidden;
+      font-size: 110%;
+    }
+
+    .spectator-feud-container {
+      width: 100vw;
+      height: 100vh;
+      padding: 24px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Mechanical Flip Board Grid */
+    .feud-stage-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 24px;
+      margin: 20px 0;
+      flex: 1;
+    }
+
+    .stage-flip-card {
+      background: linear-gradient(135deg, rgba(13, 27, 46, 0.95), rgba(6, 17, 33, 0.95));
+      border: 3px solid var(--sky-blue);
+      border-radius: 16px;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: var(--shadow-glass);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-flip-card.hidden-slot {
+      background: linear-gradient(135deg, #0284c7, #1e3a8a);
+      justify-content: center;
+    }
+
+    .slot-number-badge {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 0 20px var(--sky-blue);
+    }
+
+    .stage-answer-text {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stage-answer-pts {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fef08a;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+
+    /* Giant Strike Overlay */
+    .strike-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .strike-x {
+      font-size: 14rem;
+      font-weight: 900;
+      color: #ef4444;
+      text-shadow: 0 0 50px rgba(239, 68, 68, 0.9);
+      animation: strike-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes strike-pop {
+      0% { transform: scale(0.2); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Ambient Stage Spotlights -->
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <!-- Giant Strike Overlay (Hidden by default) -->
+  <div class="strike-overlay hidden" id="strike-overlay">
+    <!-- Strike Xs injected dynamically -->
+  </div>
+
+  <div class="spectator-feud-container">
+    <!-- Header Bar -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="flight-badge">
+          <span class="badge-code" id="brand-tag-code">FEUD-15</span>
+          <span class="badge-icon">👪</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">FAMILY FEUD</h1>
+          <p class="subtitle" id="brand-event-subtitle">Live Stage Showdown</p>
+        </div>
+      </div>
+      <div id="round-indicator" class="round-indicator">ROUND 1</div>
+    </header>
+
+    <!-- Scoreboard Bar -->
+    <div class="feud-scoreboard-bar" style="margin: 10px 0 0 0;">
+      <div class="team-score-card">
+        <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--sky-blue);" id="team1-name">TEAM 1</div>
+        <div class="team-score-val" id="team1-score">0</div>
+      </div>
+
+      <div class="round-bank-card">
+        <div class="bank-label">AWARD BANK</div>
+        <div class="bank-val" id="round-bank-val">0</div>
+      </div>
+
+      <div class="team-score-card team-right">
+        <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--sky-blue);" id="team2-name">TEAM 2</div>
+        <div class="team-score-val" id="team2-score">0</div>
+      </div>
+    </div>
+
+    <!-- Center Stage Mechanical Flip Board Grid -->
+    <div class="feud-stage-board" id="feud-stage-board">
+      <!-- 8 Answer slots rendered dynamically -->
+    </div>
+
+    <!-- Status Footer -->
+    <footer class="footer-glass">
+      <span id="status-heading" style="font-weight: 800; color: #ffffff;">SURVEY SAYS!</span>
+      <span id="status-subtext" style="color: var(--text-muted);">Points in bank roll over to the winning team!</span>
+    </footer>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="feud-spectator.js"></script>
+</body>
+</html>

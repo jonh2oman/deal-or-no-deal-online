@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Press Your Luck (No Whammy!) - Stage Host Control</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .whammy-board-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 8px;
+      height: 480px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      border: 2px solid var(--glass-border);
+      position: relative;
+    }
+
+    .whammy-tile {
+      background: #0f172a;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-align: center;
+      transition: all 0.1s ease;
+      user-select: none;
+    }
+
+    .whammy-tile.inner-center {
+      grid-column: 2 / 6;
+      grid-row: 2 / 5;
+      background: rgba(2, 132, 199, 0.15);
+      border: 2px dashed var(--sky-blue);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .whammy-tile.active-light {
+      background: #facc15;
+      border-color: #fef08a;
+      color: #0f172a;
+      box-shadow: 0 0 25px #facc15;
+      transform: scale(1.05);
+      z-index: 10;
+    }
+
+    .whammy-tile.whammy-square {
+      background: #ef4444;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="stage-badge" id="brand-tag-code">
+          <span class="badge-text" id="brand-tag-text">WHAMMY-1</span>
+          <span class="badge-icon">💥</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">PRESS YOUR LUCK</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Host Stage Controller</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+        </select>
+
+        <button id="qr-btn" class="tool-btn admin-highlight">
+          <span class="btn-icon">📱</span> <span class="btn-text">Mobile & QR</span>
+        </button>
+        <button id="spectator-btn" class="tool-btn">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn">
+          <span class="btn-icon" id="sound-icon">📺</span> <span class="btn-text" id="sound-text">PA Audio Only</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Board</span>
+        </button>
+      </div>
+
+      <!-- Integrated Header Soundboard Row -->
+      <div class="header-soundboard-row">
+        <span class="soundboard-row-label">🎵 STAGE SOUNDBOARD:</span>
+        <div class="soundboard-buttons-row">
+          <button class="sound-fx-btn btn-sm" data-sound="chime">🔔 Cash Win</button>
+          <button class="sound-fx-btn btn-sm" data-sound="daily">🎲 Board Cycle</button>
+          <button class="sound-fx-btn btn-sm" data-sound="buzzer">🚨 WHAMMY!</button>
+          <button class="sound-fx-btn btn-sm" data-sound="win">🏆 Big Win Fanfare</button>
+          <button class="sound-fx-btn btn-sm" data-sound="theme">🎺 Theme Song</button>
+          <button class="sound-fx-btn btn-sm danger" data-sound="stop">🛑 Silence All</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scoreboard Bar -->
+    <div class="feud-scoreboard-bar">
+      <!-- Player 1 -->
+      <div class="team-score-card" id="card-p1">
+        <input type="text" id="p1-name" class="team-name-input" value="CONTESTANT 1">
+        <div class="team-score-val" id="p1-cash">$0</div>
+        <div style="font-size: 0.85rem; color: #cbd5e1; text-align: center;">Spins: <span id="p1-spins">3</span> | Whammies: <span id="p1-whammies">0</span>/4</div>
+        <button class="btn btn-primary" onclick="whammyApp.setActiveTurn(0)" style="margin-top: 6px; width: 100%;">⭐ Active Player</button>
+      </div>
+
+      <!-- Player 2 -->
+      <div class="team-score-card" id="card-p2">
+        <input type="text" id="p2-name" class="team-name-input" value="CONTESTANT 2">
+        <div class="team-score-val" id="p2-cash">$0</div>
+        <div style="font-size: 0.85rem; color: #cbd5e1; text-align: center;">Spins: <span id="p2-spins">3</span> | Whammies: <span id="p2-whammies">0</span>/4</div>
+        <button class="btn btn-primary" onclick="whammyApp.setActiveTurn(1)" style="margin-top: 6px; width: 100%;">⭐ Active Player</button>
+      </div>
+
+      <!-- Player 3 -->
+      <div class="team-score-card" id="card-p3">
+        <input type="text" id="p3-name" class="team-name-input" value="CONTESTANT 3">
+        <div class="team-score-val" id="p3-cash">$0</div>
+        <div style="font-size: 0.85rem; color: #cbd5e1; text-align: center;">Spins: <span id="p3-spins">3</span> | Whammies: <span id="p3-whammies">0</span>/4</div>
+        <button class="btn btn-primary" onclick="whammyApp.setActiveTurn(2)" style="margin-top: 6px; width: 100%;">⭐ Active Player</button>
+      </div>
+    </div>
+
+    <!-- 18-Square Flashing Outer Board Grid -->
+    <div class="whammy-board-grid" id="whammy-grid">
+      <!-- Outer 18 Squares + Inner Center Display populated dynamically -->
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="peer-connection.js"></script>
+  <script src="audio.js"></script>
+  <script src="whammy-app.js"></script>
+</body>
+</html>

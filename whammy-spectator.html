@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Press Your Luck - Live Stage TV Display</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+      background: #020617;
+    }
+
+    .spectator-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      padding: 24px 36px;
+      box-sizing: border-box;
+      gap: 16px;
+    }
+
+    .whammy-board-grid-tv {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 12px;
+      flex: 1;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 24px;
+      border: 3px solid var(--glass-border);
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
+      position: relative;
+    }
+
+    .whammy-tile-tv {
+      background: #0f172a;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-align: center;
+      transition: all 0.1s ease;
+    }
+
+    .whammy-tile-tv.inner-center-tv {
+      grid-column: 2 / 6;
+      grid-row: 2 / 5;
+      background: rgba(2, 132, 199, 0.2);
+      border: 3px dashed var(--sky-blue);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 18px;
+    }
+
+    .whammy-tile-tv.active-light {
+      background: #facc15;
+      border-color: #fef08a;
+      color: #0f172a;
+      box-shadow: 0 0 35px #facc15;
+      transform: scale(1.06);
+      z-index: 10;
+    }
+
+    .podiums-bar-tv {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    .podium-tv {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 16px 24px;
+      text-align: center;
+    }
+
+    .podium-tv.active-turn {
+      border-color: #facc15;
+      background: rgba(234, 179, 8, 0.2);
+      box-shadow: 0 0 30px rgba(234, 179, 8, 0.4);
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="spectator-container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-size: 2.5rem;">💥</span>
+        <h1 style="font-family: var(--font-display); font-size: 2.5rem; margin: 0; color: #ffffff; letter-spacing: 2px;">
+          PRESS YOUR LUCK - NO WHAMMY!
+        </h1>
+      </div>
+    </div>
+
+    <!-- 18 Square Grid TV -->
+    <div class="whammy-board-grid-tv" id="whammy-grid-tv">
+      <!-- Generated dynamically -->
+    </div>
+
+    <!-- Contestant Podiums TV -->
+    <div class="podiums-bar-tv">
+      <div class="podium-tv" id="podium-tv-0">
+        <div style="font-family: var(--font-display); font-size: 1.5rem; color: #ffffff;" id="p1-name-tv">CONTESTANT 1</div>
+        <div style="font-family: var(--font-display); font-size: 2.5rem; color: #34d399;" id="p1-cash-tv">$0</div>
+        <div style="font-size: 0.9rem; color: #94a3b8;">Spins: <span id="p1-spins-tv">3</span> | Whammies: <span id="p1-whammies-tv">0</span></div>
+      </div>
+      <div class="podium-tv" id="podium-tv-1">
+        <div style="font-family: var(--font-display); font-size: 1.5rem; color: #ffffff;" id="p2-name-tv">CONTESTANT 2</div>
+        <div style="font-family: var(--font-display); font-size: 2.5rem; color: #34d399;" id="p2-cash-tv">$0</div>
+        <div style="font-size: 0.9rem; color: #94a3b8;">Spins: <span id="p2-spins-tv">3</span> | Whammies: <span id="p2-whammies-tv">0</span></div>
+      </div>
+      <div class="podium-tv" id="podium-tv-2">
+        <div style="font-family: var(--font-display); font-size: 1.5rem; color: #ffffff;" id="p3-name-tv">CONTESTANT 3</div>
+        <div style="font-family: var(--font-display); font-size: 2.5rem; color: #34d399;" id="p3-cash-tv">$0</div>
+        <div style="font-size: 0.9rem; color: #94a3b8;">Spins: <span id="p3-spins-tv">3</span> | Whammies: <span id="p3-whammies-tv">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="whammy-spectator.js"></script>
+</body>
+</html>

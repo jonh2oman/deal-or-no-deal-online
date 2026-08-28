@@ -116,9 +116,17 @@ class GameController {
             `🤝 ${voteData.dealPct}% DEAL | 🚫 ${voteData.noDealPct}% NO DEAL (${voteData.total} Votes)`
           );
           this.broadcastState();
+        },
+        (data, conn) => {
+          if (data && data.type === 'REQUEST_STATE') {
+            // Send current state back to the requesting connection
+            if (conn && conn.open) {
+              conn.send({ type: 'STATE_UPDATE', state: this.buildState ? this.buildState() : {} });
+            }
+          }
         }
       );
-      mobilePeerManager.setMobileTarget('deal-mobile-spectator.html', false);
+      mobilePeerManager.setMobileTarget('deal-mobile-spectator.html', true);
     }
   }
 
@@ -943,18 +951,18 @@ class GameController {
     this.elements.resultModal.classList.remove('hidden');
   }
 
-  broadcastState() {
-    if (!this.broadcast) return;
-    const statePayload = {
+  buildState() {
+    return {
       prizes: this.prizes,
       cases: this.cases,
       playerCaseNumber: this.playerCaseNumber,
       currentRoundIndex: this.currentRoundIndex,
       gameState: this.gameState,
       currentOffer: this.currentOffer,
-      statusHeading: this.elements.statusHeading ? this.elements.statusHeading.textContent : "",
-      statusSubtext: this.elements.statusSubtext ? this.elements.statusSubtext.textContent : "",
-      roundText: this.elements.roundIndicator ? this.elements.roundIndicator.textContent : "",
+      offerAmount: this.currentOffer ? this.currentOffer.offerAmount : 0,
+      statusHeading: this.elements && this.elements.statusHeading ? this.elements.statusHeading.textContent : "",
+      statusSubtext: this.elements && this.elements.statusSubtext ? this.elements.statusSubtext.textContent : "",
+      roundText: this.elements && this.elements.roundIndicator ? this.elements.roundIndicator.textContent : "",
       swapData: this.swapData,
       resultData: this.resultData,
       revealData: this.revealData,
@@ -962,10 +970,19 @@ class GameController {
       theme: this.theme,
       branding: this.branding
     };
+  }
+
+  broadcastState() {
+    const statePayload = this.buildState();
     try {
       localStorage.setItem('gander_deal_last_state', JSON.stringify(statePayload));
     } catch (e) {}
-    this.broadcast.postMessage({ type: 'SYNC_STATE', state: statePayload });
+    if (this.broadcast) {
+      this.broadcast.postMessage({ type: 'SYNC_STATE', state: statePayload });
+    }
+    if (typeof mobilePeerManager !== 'undefined' && mobilePeerManager.pushStateToAll) {
+      mobilePeerManager.pushStateToAll(statePayload);
+    }
   }
 
   // Admin Modal Methods

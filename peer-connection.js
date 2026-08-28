@@ -15,13 +15,15 @@ class MobilePeerManager {
     this.votes = { deal: 0, noDeal: 0, total: 0 };
     this.onBuzzCallback = null;
     this.onVoteCallback = null;
+    this.onRequestStateCallback = null;
     this.mobileTargetPage = 'buzzer.html';
     this.mobileNeedsHostParam = true;
   }
 
-  initHost(onBuzz, onVote) {
+  initHost(onBuzz, onVote, onRequestState = null) {
     this.onBuzzCallback = onBuzz;
     this.onVoteCallback = onVote;
+    this.onRequestStateCallback = onRequestState;
 
     // Load PeerJS dynamically if needed
     if (typeof Peer === 'undefined') {
@@ -67,6 +69,10 @@ class MobilePeerManager {
           if (this.onFinalSubmitCallback) {
             this.onFinalSubmitCallback(data);
           }
+        } else if (data.type === 'REQUEST_STATE') {
+          if (this.onRequestStateCallback) {
+            this.onRequestStateCallback(data, conn);
+          }
         }
       });
 
@@ -80,6 +86,16 @@ class MobilePeerManager {
     this.mobileTargetPage = page;
     this.mobileNeedsHostParam = needsHostParam;
     if (this.hostPeerId) this.renderQRCode(this.hostPeerId);
+  }
+
+  pushStateToAll(payload) {
+    if (!this.connections || this.connections.length === 0) return;
+    const message = { type: 'STATE_UPDATE', state: payload };
+    this.connections.forEach(conn => {
+      try {
+        if (conn && conn.open) conn.send(message);
+      } catch (e) {}
+    });
   }
 
   setGameInfo(gameTitle, playersList) {

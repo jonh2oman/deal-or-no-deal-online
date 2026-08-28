@@ -64,6 +64,7 @@ const DEFAULT_BRANDING = {
   eventTitle: "DEAL OR NO DEAL",
   eventSubtitle: "LIVE STAGE GAME SHOW",
   eventTag: "DND-15",
+  showEventTag: true,
   bankerName: "BANKER"
 };
 
@@ -158,6 +159,17 @@ class GameController {
     if (this.elements.brandEventTitle) this.elements.brandEventTitle.textContent = b.eventTitle || "DEAL OR NO DEAL";
     if (this.elements.brandEventSubtitle) this.elements.brandEventSubtitle.textContent = b.eventSubtitle || "LIVE STAGE GAME SHOW";
     if (this.elements.brandTagCode) this.elements.brandTagCode.textContent = b.eventTag || "DND-15";
+    
+    // Toggle header badge pill
+    const flightBadge = document.querySelector('.flight-badge');
+    if (flightBadge) {
+      if (b.showEventTag === false) {
+        flightBadge.classList.add('hidden');
+      } else {
+        flightBadge.classList.remove('hidden');
+      }
+    }
+
     document.title = `${b.eventTitle || "Deal or No Deal"} - Host Control`;
     if (b.defaultTheme && b.defaultTheme !== this.theme) {
       this.setTheme(b.defaultTheme);
@@ -187,6 +199,7 @@ class GameController {
       settingEventTitle: document.getElementById('setting-event-title'),
       settingEventSubtitle: document.getElementById('setting-event-subtitle'),
       settingEventTag: document.getElementById('setting-event-tag'),
+      settingShowTag: document.getElementById('setting-show-tag'),
       settingBankerName: document.getElementById('setting-banker-name'),
       settingTheme: document.getElementById('setting-theme'),
 
@@ -930,6 +943,7 @@ class GameController {
       if (this.elements.settingEventTitle) this.elements.settingEventTitle.value = this.branding.eventTitle || "";
       if (this.elements.settingEventSubtitle) this.elements.settingEventSubtitle.value = this.branding.eventSubtitle || "";
       if (this.elements.settingEventTag) this.elements.settingEventTag.value = this.branding.eventTag || "";
+      if (this.elements.settingShowTag) this.elements.settingShowTag.checked = this.branding.showEventTag !== false;
       if (this.elements.settingBankerName) this.elements.settingBankerName.value = this.branding.bankerName || "";
       if (this.elements.settingTheme) this.elements.settingTheme.value = this.branding.defaultTheme || this.theme || "runway-blue";
     }
@@ -950,6 +964,7 @@ class GameController {
       eventTitle: this.elements.settingEventTitle ? (this.elements.settingEventTitle.value.trim() || "DEAL OR NO DEAL") : "DEAL OR NO DEAL",
       eventSubtitle: this.elements.settingEventSubtitle ? (this.elements.settingEventSubtitle.value.trim() || "LIVE STAGE GAME SHOW") : "LIVE STAGE GAME SHOW",
       eventTag: this.elements.settingEventTag ? (this.elements.settingEventTag.value.trim() || "DND-15") : "DND-15",
+      showEventTag: this.elements.settingShowTag ? this.elements.settingShowTag.checked : true,
       bankerName: this.elements.settingBankerName ? (this.elements.settingBankerName.value.trim() || "BANKER") : "BANKER",
       defaultTheme: updatedTheme
     };

@@ -140,6 +140,16 @@ class SpectatorController {
       if (this.elements.brandEventTitle) this.elements.brandEventTitle.textContent = state.branding.eventTitle || "DEAL OR NO DEAL";
       if (this.elements.brandEventSubtitle) this.elements.brandEventSubtitle.textContent = state.branding.eventSubtitle || "LIVE STAGE GAME SHOW";
       if (this.elements.brandTagCode) this.elements.brandTagCode.textContent = state.branding.eventTag || "DND-15";
+      
+      const flightBadge = document.querySelector('.flight-badge');
+      if (flightBadge) {
+        if (state.branding.showEventTag === false) {
+          flightBadge.classList.add('hidden');
+        } else {
+          flightBadge.classList.remove('hidden');
+        }
+      }
+
       document.title = `${state.branding.eventTitle || "Deal or No Deal"} - Stage Display`;
     }
 

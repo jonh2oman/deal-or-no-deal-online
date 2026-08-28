@@ -1225,6 +1225,41 @@ body::before {
   padding: 8px 0;
 }
 
+.full-width-group {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.toggle-switch-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  padding: 10px 16px;
+  border-radius: 10px;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.toggle-switch-label:hover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: var(--sky-blue);
+}
+
+.toggle-switch-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--sky-blue);
+  cursor: pointer;
+}
+
 /* Button UI System */
 .btn {
   border: none;

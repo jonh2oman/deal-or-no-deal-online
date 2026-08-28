@@ -476,13 +476,16 @@ class GameController {
       closeQrBtn.addEventListener('click', () => qrModal.classList.add('hidden'));
     }
 
-    if (resetBuzzersBtn) {
-      resetBuzzersBtn.addEventListener('click', () => {
-        sounds.playSelect();
-        if (typeof mobilePeerManager !== 'undefined') {
-          mobilePeerManager.resetBuzzers();
-          mobilePeerManager.resetVotes();
-        }
+    // Sound FX Dropdown Toggle
+    const soundFxMenuBtn = document.getElementById('sound-fx-menu-btn');
+    const soundFxDropdown = document.getElementById('sound-fx-dropdown');
+    if (soundFxMenuBtn && soundFxDropdown) {
+      soundFxMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundFxDropdown.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => {
+        soundFxDropdown.classList.add('hidden');
       });
     }
 

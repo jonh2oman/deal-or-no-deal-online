@@ -264,6 +264,19 @@ class FeudController {
 
     this.elements.revealAllBtn.addEventListener('click', () => this.revealAllAnswers());
 
+    // Sound FX Dropdown Toggle
+    const soundFxMenuBtn = document.getElementById('sound-fx-menu-btn');
+    const soundFxDropdown = document.getElementById('sound-fx-dropdown');
+    if (soundFxMenuBtn && soundFxDropdown) {
+      soundFxMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundFxDropdown.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => {
+        soundFxDropdown.classList.add('hidden');
+      });
+    }
+
     // Soundboard
     if (this.soundFxBtns) {
       this.soundFxBtns.forEach(btn => {

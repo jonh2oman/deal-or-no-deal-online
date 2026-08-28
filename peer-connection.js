@@ -43,6 +43,16 @@ class MobilePeerManager {
     this.peer.on('connection', (conn) => {
       this.connections.push(conn);
 
+      if (this.gameTitle && this.playersList && conn.open) {
+        conn.send({ type: 'INIT_GAME_INFO', gameTitle: this.gameTitle, playersList: this.playersList });
+      }
+
+      conn.on('open', () => {
+        if (this.gameTitle && this.playersList) {
+          conn.send({ type: 'INIT_GAME_INFO', gameTitle: this.gameTitle, playersList: this.playersList });
+        }
+      });
+
       conn.on('data', (data) => {
         if (!data) return;
         if (data.type === 'BUZZ') {
@@ -59,6 +69,14 @@ class MobilePeerManager {
       conn.on('close', () => {
         this.connections = this.connections.filter(c => c !== conn);
       });
+    });
+  }
+
+  setGameInfo(gameTitle, playersList) {
+    this.gameTitle = gameTitle;
+    this.playersList = playersList;
+    this.connections.forEach(c => {
+      if (c.open) c.send({ type: 'INIT_GAME_INFO', gameTitle, playersList });
     });
   }
 

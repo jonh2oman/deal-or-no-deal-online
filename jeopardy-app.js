@@ -104,6 +104,8 @@ class JeopardyController {
         (buzzData) => this.handleMobileBuzz(buzzData),
         (voteData) => {}
       );
+      mobilePeerManager.onFinalSubmitCallback = (finalData) => this.handleFinalSubmit(finalData);
+      mobilePeerManager.setGameInfo("JEOPARDY!", [this.p1Name, this.p2Name, this.p3Name]);
     }
   }
 

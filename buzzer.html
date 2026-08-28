@@ -254,7 +254,22 @@
 
       conn.on('data', (data) => {
         if (!data) return;
-        if (data.type === 'BUZZ_WIN') {
+        if (data.type === 'INIT_GAME_INFO') {
+          if (data.gameTitle) {
+            document.querySelector('.mobile-title').textContent = `${data.gameTitle} PLAYER BUZZER`;
+          }
+          if (data.playersList && Array.isArray(data.playersList)) {
+            const container = document.querySelector('.team-select-box');
+            if (container) {
+              container.innerHTML = data.playersList.map((pName, idx) => `
+                <button class="team-opt-btn ${idx === 0 ? 'selected' : ''}" onclick="selectPlayer('${pName}', this)">
+                  ${pName}
+                </button>
+              `).join('');
+              selectedTeam = data.playersList[0];
+            }
+          }
+        } else if (data.type === 'BUZZ_WIN') {
           lockoutText.textContent = "YOU BUZZED FIRST! ⚡";
           lockoutBox.style.borderColor = "#34d399";
           lockoutBox.style.background = "rgba(52, 211, 153, 0.2)";
@@ -313,6 +328,12 @@
         </div>
       `;
     });
+
+    function selectPlayer(pName, btn) {
+      selectedTeam = pName;
+      document.querySelectorAll('.team-opt-btn').forEach(b => b.classList.remove('selected'));
+      if (btn) btn.classList.add('selected');
+    }
 
     buzzBtn.addEventListener('touchstart', triggerBuzz);
     buzzBtn.addEventListener('click', triggerBuzz);

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="runway-blue">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeopardy! - Host Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Jeopardy Specific Host Control Styles */
+    .jeopardy-podiums-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .podium-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-glass);
+      transition: border-color 0.2s ease;
+    }
+
+    .podium-card.buzzed {
+      border-color: #34d399;
+      box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
+    }
+
+    .podium-name-input {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--sky-blue);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .podium-score-val {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 0 10px var(--sky-blue);
+    }
+
+    .podium-actions {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .podium-btn {
+      flex: 1;
+      font-size: 0.8rem;
+      padding: 6px 4px;
+    }
+
+    /* 6x5 Board Grid */
+    .jeopardy-board-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .category-header-cell {
+      background: linear-gradient(135deg, #0284c7, #1e3a8a);
+      border: 1px solid var(--sky-blue);
+      border-radius: 10px;
+      padding: 12px 6px;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clue-cell-btn {
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 14px 6px;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #fef08a;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .clue-cell-btn:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: var(--sky-blue);
+      transform: translateY(-2px);
+    }
+
+    .clue-cell-btn.revealed {
+      opacity: 0.35;
+      background: rgba(0, 0, 0, 0.4);
+      color: var(--text-muted);
+    }
+
+    /* Host Teleprompter Console */
+    .teleprompter-console {
+      background: var(--glass-bg);
+      border: 2px solid var(--sky-blue);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-neon);
+    }
+
+    .teleprompter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .teleprompter-clue {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .teleprompter-answer {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #34d399;
+    }
+  </style>
+</head>
+<body>
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Ambient Stage Spotlights -->
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container">
+    <!-- Header Navigation -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="flight-badge">
+          <span class="badge-code" id="brand-tag-code">JEOP-15</span>
+          <span class="badge-icon">🧠</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">JEOPARDY!</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Host Stage Controller</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool" title="Change Stage Theme Palette">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+        </select>
+
+        <button id="qr-btn" class="tool-btn admin-highlight" title="Show QR Code for Mobile Buzzers & Voting">
+          <span class="btn-icon">📱</span> <span class="btn-text">Mobile & QR</span>
+        </button>
+        <button id="spectator-btn" class="tool-btn" title="Toggle Big Screen Spectator Mode">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn" title="Toggle Audio">
+          <span class="btn-icon" id="sound-icon">📺</span> <span class="btn-text" id="sound-text">PA Audio Only</span>
+        </button>
+        <button id="admin-btn" class="tool-btn admin-highlight" title="Board Setup & Settings">
+          <span class="btn-icon">⚙️</span> <span class="btn-text">Board Settings</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light" title="Reset Current Game Board">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Board</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 3 Contestant Podiums Bar -->
+    <div class="jeopardy-podiums-bar">
+      <!-- Contestant 1 -->
+      <div class="podium-card" id="podium-1">
+        <input type="text" id="p1-name" class="podium-name-input" value="CONTESTANT 1">
+        <div class="podium-score-val" id="p1-score">$0</div>
+        <div class="podium-actions">
+          <button class="btn btn-primary podium-btn" onclick="jeopApp.awardPoints(0)">+ Award</button>
+          <button class="btn btn-secondary podium-btn" onclick="jeopApp.deductPoints(0)">- Deduct</button>
+        </div>
+      </div>
+
+      <!-- Contestant 2 -->
+      <div class="podium-card" id="podium-2">
+        <input type="text" id="p2-name" class="podium-name-input" value="CONTESTANT 2">
+        <div class="podium-score-val" id="p2-score">$0</div>
+        <div class="podium-actions">
+          <button class="btn btn-primary podium-btn" onclick="jeopApp.awardPoints(1)">+ Award</button>
+          <button class="btn btn-secondary podium-btn" onclick="jeopApp.deductPoints(1)">- Deduct</button>
+        </div>
+      </div>
+
+      <!-- Contestant 3 -->
+      <div class="podium-card" id="podium-3">
+        <input type="text" id="p3-name" class="podium-name-input" value="CONTESTANT 3">
+        <div class="podium-score-val" id="p3-score">$0</div>
+        <div class="podium-actions">
+          <button class="btn btn-primary podium-btn" onclick="jeopApp.awardPoints(2)">+ Award</button>
+          <button class="btn btn-secondary podium-btn" onclick="jeopApp.deductPoints(2)">- Deduct</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teleprompter Active Clue Console -->
+    <div class="teleprompter-console">
+      <div class="teleprompter-header">
+        <span class="podium-status" id="active-clue-value-tag">SELECT A CLUE FROM THE BOARD</span>
+        <button id="daily-double-btn" class="btn btn-primary" type="button">🎲 Daily Double</button>
+      </div>
+      <div class="teleprompter-clue" id="teleprompter-clue">
+        Select any category dollar value ($200 - $1000) below to activate clue.
+      </div>
+      <div class="teleprompter-answer" id="teleprompter-answer">
+        Secret Answer: ---
+      </div>
+    </div>
+
+    <!-- 6x5 Interactive Jeopardy Board Grid -->
+    <div class="jeopardy-board-grid" id="jeopardy-board-grid">
+      <!-- 6 Categories x 5 Clue Value Cells generated dynamically -->
+    </div>
+
+    <!-- Soundboard Console -->
+    <div class="soundboard-glass">
+      <div class="soundboard-header">
+        <span>🎵 JEOPARDY STAGE SOUNDBOARD</span>
+      </div>
+      <div class="soundboard-buttons">
+        <button class="sound-fx-btn" data-sound="chime">🔔 Board Chime</button>
+        <button class="sound-fx-btn" data-sound="daily">🎲 Daily Double</button>
+        <button class="sound-fx-btn" data-sound="buzzer">🚨 Time Out Buzzer</button>
+        <button class="sound-fx-btn" data-sound="win">🏆 Win Fanfare</button>
+        <button class="sound-fx-btn" data-sound="theme">🎺 Jeopardy Theme</button>
+        <button class="sound-fx-btn danger" data-sound="stop">🛑 Silence All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Mobile Buzzers & QR Code -->
+  <div class="modal-overlay hidden" id="qr-modal">
+    <div class="modal-glass admin-modal-content" style="max-width: 480px; text-align: center;">
+      <div class="modal-header center-text">
+        <div class="modal-title-group">
+          <h2>📱 Mobile Player Buzzers & Voting</h2>
+          <p>Scan with smartphone camera to connect live to stage!</p>
+        </div>
+        <button id="close-qr-btn" class="close-modal-btn" type="button">&times;</button>
+      </div>
+
+      <div style="margin: 20px 0; display: flex; flex-direction: column; align-items: center;">
+        <div id="qrcode-canvas" style="padding: 16px; background: #ffffff; border-radius: 16px; box-shadow: var(--shadow-neon);"></div>
+        <p style="margin-top: 12px; font-size: 0.85rem; color: var(--sky-blue);" id="qr-status-text">
+          Scan QR Code on Mobile Phone
+        </p>
+        <a id="qr-direct-link" href="#" target="_blank" style="color: var(--text-muted); font-size: 0.8rem; word-break: break-all; margin-top: 6px;"></a>
+      </div>
+
+      <div class="modal-footer">
+        <button id="reset-buzzers-btn" class="btn btn-primary" type="button">
+          <span>🔄</span> Reset Mobile Buzzers
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Settings & Board Editor -->
+  <div class="modal-overlay hidden" id="admin-modal">
+    <div class="modal-glass admin-modal-content">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2>⚙️ Jeopardy Settings & Board Editor</h2>
+          <p>Customize event branding, stage palette, and manage categories and clues.</p>
+        </div>
+        <button id="close-admin-btn" class="close-modal-btn" type="button">&times;</button>
+      </div>
+
+      <div class="settings-modal-body">
+        <div class="branding-inputs-grid">
+          <div class="input-group">
+            <label>Main Event / App Title:</label>
+            <input type="text" id="setting-event-title" class="input-field" placeholder="e.g. JEOPARDY! SHOWDOWN">
+          </div>
+          <div class="input-group">
+            <label>Sub-Title / Location:</label>
+            <input type="text" id="setting-event-subtitle" class="input-field" placeholder="e.g. LIVE STAGE PRODUCTION">
+          </div>
+          <div class="input-group">
+            <label>Event Tag / Code:</label>
+            <input type="text" id="setting-event-tag" class="input-field" placeholder="e.g. JEOP-15">
+          </div>
+          <div class="input-group">
+            <label>Default Stage Theme Palette:</label>
+            <select id="setting-theme" class="input-field select-tool">
+              <option value="runway-blue">✈️ Runway Blue</option>
+              <option value="golden-sunset">🌅 Golden Sunset</option>
+              <option value="night-radar">📡 Night Radar</option>
+              <option value="crimson-vip">🍷 Crimson VIP</option>
+              <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+              <option value="emerald-gala">💎 Emerald Gala</option>
+              <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="save-prizes-btn" class="btn btn-primary btn-large" type="button">
+          <span>💾</span> Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="peer-connection.js"></script>
+  <script src="jeopardy-app.js"></script>
+</body>
+</html>

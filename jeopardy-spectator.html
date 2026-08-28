@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="runway-blue">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeopardy! - Stage Display</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      overflow: hidden;
+      font-size: 110%;
+    }
+
+    .spectator-jeop-container {
+      width: 100vw;
+      height: 100vh;
+      padding: 24px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 6x5 Board Grid for Big Screen */
+    .jeop-stage-board {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+      flex: 1;
+    }
+
+    .stage-cat-cell {
+      background: linear-gradient(135deg, #0284c7, #1e3a8a);
+      border: 2px solid var(--sky-blue);
+      border-radius: 12px;
+      padding: 16px 8px;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .stage-clue-cell {
+      background: linear-gradient(135deg, rgba(13, 27, 46, 0.9), rgba(6, 17, 33, 0.9));
+      border: 2px solid var(--glass-border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #fef08a;
+      text-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+      box-shadow: var(--shadow-glass);
+      transition: all 0.3s ease;
+    }
+
+    .stage-clue-cell.revealed {
+      opacity: 0.2;
+      color: transparent;
+      text-shadow: none;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Fullscreen Clue View Overlay */
+    .clue-stage-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.95), rgba(30, 58, 138, 0.95));
+      backdrop-filter: blur(15px);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      text-align: center;
+    }
+
+    .clue-stage-modal.daily-double-bg {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(180, 83, 9, 0.95));
+    }
+
+    .clue-modal-val {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #fef08a;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .clue-modal-text {
+      font-family: var(--font-display);
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+      max-width: 1100px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .podiums-stage-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 12px 24px;
+    }
+
+    .stage-podium-card {
+      text-align: center;
+    }
+
+    .stage-podium-name {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--sky-blue);
+    }
+
+    .stage-podium-score {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 0 12px var(--sky-blue);
+    }
+  </style>
+</head>
+<body>
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Ambient Stage Spotlights -->
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <!-- Fullscreen Active Clue Modal Overlay -->
+  <div class="clue-stage-modal hidden" id="clue-stage-modal">
+    <div class="clue-modal-val" id="clue-modal-val">$400</div>
+    <div class="clue-modal-text" id="clue-modal-text">THIS FAMOUS CANADIAN MONUMENT IS LOCATED IN NEWFOUNDLAND</div>
+  </div>
+
+  <div class="spectator-jeop-container">
+    <!-- Header Bar -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="flight-badge">
+          <span class="badge-code" id="brand-tag-code">JEOP-15</span>
+          <span class="badge-icon">🧠</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">JEOPARDY!</h1>
+          <p class="subtitle" id="brand-event-subtitle">Live Stage Trivia Showdown</p>
+        </div>
+      </div>
+      <div class="round-indicator">SINGLE JEOPARDY</div>
+    </header>
+
+    <!-- Center Stage 6x5 Board Grid -->
+    <div class="jeop-stage-board" id="jeop-stage-board">
+      <!-- 6 Categories x 5 Dollar Rows rendered dynamically -->
+    </div>
+
+    <!-- Bottom Contestants Podiums Bar -->
+    <div class="podiums-stage-bar">
+      <div class="stage-podium-card">
+        <div class="stage-podium-name" id="p1-name">CONTESTANT 1</div>
+        <div class="stage-podium-score" id="p1-score">$0</div>
+      </div>
+      <div class="stage-podium-card">
+        <div class="stage-podium-name" id="p2-name">CONTESTANT 2</div>
+        <div class="stage-podium-score" id="p2-score">$0</div>
+      </div>
+      <div class="stage-podium-card">
+        <div class="stage-podium-name" id="p3-name">CONTESTANT 3</div>
+        <div class="stage-podium-score" id="p3-score">$0</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="jeopardy-spectator.js"></script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wheel of Fortune - Mobile Follow Along</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #020617;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 16px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .mobile-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .game-title {
+      font-family: 'Teko', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fef08a;
+      text-align: center;
+      margin-bottom: 4px;
+      letter-spacing: 2px;
+    }
+    .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #94a3b8;
+    }
+    .value {
+      font-family: 'Teko', sans-serif;
+      font-size: 2rem;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .puzzle-row-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .puzzle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+    .tile {
+      width: 34px;
+      height: 38px;
+      background: rgba(2, 132, 199, 0.3);
+      border: 2px solid #0284c7;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Teko', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
+    }
+    .tile.revealed {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
+    .tile.blank {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .tile.space {
+      background: transparent;
+      border-color: transparent;
+      width: 16px;
+    }
+    .contestants-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .contestant-badge {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+    .contestant-badge.active {
+      border-color: #facc15;
+      background: rgba(234, 179, 8, 0.15);
+    }
+    .contestant-badge .c-name {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #94a3b8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .contestant-badge.active .c-name {
+      color: #fef08a;
+    }
+    .contestant-badge .c-score {
+      font-family: 'Teko', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-title">🎡 WHEEL OF FORTUNE</div>
+  <div class="mobile-card">
+    <div class="label">CATEGORY</div>
+    <div class="value" id="category-tv">—</div>
+  </div>
+  <div class="mobile-card">
+    <div class="label">PUZZLE</div>
+    <div class="puzzle-row-wrap" id="puzzle-tiles"></div>
+  </div>
+  <div class="mobile-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div>
+        <div class="label">ACTIVE SPIN</div>
+        <div class="value" id="spin-tv" style="color:#fef08a;">—</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="label">ROUND SCORE</div>
+        <div class="value" id="score-tv">$0</div>
+      </div>
+    </div>
+    <div class="label" style="margin-top:10px;">CONTESTANTS</div>
+    <div class="contestants-grid">
+      <div class="contestant-badge" id="c-badge-0">
+        <div class="c-name" id="p1-name">PLAYER 1</div>
+        <div class="c-score" id="p1-score">$0</div>
+      </div>
+      <div class="contestant-badge" id="c-badge-1">
+        <div class="c-name" id="p2-name">PLAYER 2</div>
+        <div class="c-score" id="p2-score">$0</div>
+      </div>
+      <div class="contestant-badge" id="c-badge-2">
+        <div class="c-name" id="p3-name">PLAYER 3</div>
+        <div class="c-score" id="p3-score">$0</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const bc = new BroadcastChannel('wheel_stage_broadcast');
+    function render(state) {
+      if (!state) return;
+      document.getElementById('category-tv').textContent = state.category || '—';
+      
+      const p1Score = state.p1RoundScore !== undefined ? state.p1RoundScore : 0;
+      const p2Score = state.p2RoundScore !== undefined ? state.p2RoundScore : 0;
+      const p3Score = state.p3RoundScore !== undefined ? state.p3RoundScore : 0;
+
+      document.getElementById('p1-name').textContent = state.p1Name || 'PLAYER 1';
+      document.getElementById('p2-name').textContent = state.p2Name || 'PLAYER 2';
+      document.getElementById('p3-name').textContent = state.p3Name || 'PLAYER 3';
+
+      document.getElementById('p1-score').textContent = '$' + p1Score.toLocaleString();
+      document.getElementById('p2-score').textContent = '$' + p2Score.toLocaleString();
+      document.getElementById('p3-score').textContent = '$' + p3Score.toLocaleString();
+
+      const activeTurn = state.activeTurn !== undefined ? state.activeTurn : 0;
+      [0, 1, 2].forEach(idx => {
+        const badge = document.getElementById(`c-badge-${idx}`);
+        if (badge) {
+          if (idx === activeTurn) badge.classList.add('active');
+          else badge.classList.remove('active');
+        }
+      });
+
+      const activeScore = activeTurn === 0 ? p1Score : (activeTurn === 1 ? p2Score : p3Score);
+      document.getElementById('score-tv').textContent = '$' + (state.playerScore !== undefined ? state.playerScore : activeScore).toLocaleString();
+      
+      document.getElementById('spin-tv').textContent = state.activeSpinValue ? (typeof state.activeSpinValue === 'number' ? '$' + state.activeSpinValue : state.activeSpinValue) : '—';
+      
+      const grid = document.getElementById('puzzle-tiles');
+      grid.innerHTML = '';
+      const phrase = (state.phrase || state.puzzlePhrase || '').toUpperCase();
+      const rawRevealed = state.revealedLetters || state.guessedLetters || [];
+      const revealed = new Set(rawRevealed.map(l => l.toUpperCase()));
+
+      // Break phrase into words for clean wrapped lines
+      const words = phrase.split(' ');
+      let rows = [''];
+      words.forEach(w => {
+        if ((rows[rows.length - 1] + ' ' + w).trim().length <= 12) {
+          rows[rows.length - 1] = (rows[rows.length - 1] + ' ' + w).trim();
+        } else {
+          rows.push(w);
+        }
+      });
+
+      rows.forEach(rText => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'puzzle-row';
+        for (let char of rText) {
+          const tile = document.createElement('div');
+          if (char === ' ') {
+            tile.className = 'tile space';
+          } else if (!/[A-Z]/.test(char)) {
+            tile.className = 'tile revealed';
+            tile.textContent = char;
+          } else if (revealed.has(char)) {
+            tile.className = 'tile revealed';
+            tile.textContent = char;
+          } else {
+            tile.className = 'tile blank';
+          }
+          rowDiv.appendChild(tile);
+        }
+        grid.appendChild(rowDiv);
+      });
+    }
+    bc.onmessage = e => { if (e.data && e.data.type === 'SYNC_WHEEL_STATE') render(e.data.state); };
+    try { const s = localStorage.getItem('wheel_last_state'); if (s) render(JSON.parse(s)); } catch(_) {}
+  </script>
+</body>
+</html>

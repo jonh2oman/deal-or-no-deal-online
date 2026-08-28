@@ -10,13 +10,13 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
-      overflow: hidden;
+      overflow-y: auto;
       touch-action: manipulation;
     }
 
     .vote-container {
       width: 100vw;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -24,6 +24,7 @@
       padding: 28px 20px;
       position: relative;
       z-index: 1;
+      box-sizing: border-box;
     }
 
     .vote-title {
@@ -44,7 +45,7 @@
     .vote-buttons-grid {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
       width: 100%;
       max-width: 400px;
     }
@@ -98,7 +99,7 @@
 
   <div class="vote-container">
     <div>
-      <h1 class="vote-title">AUDIENCE LIVE VOTE</h1>
+      <h1 class="vote-title" id="vote-main-title">AUDIENCE LIVE VOTE</h1>
       <p class="vote-sub" id="vote-sub-text">Should the contestant accept the offer?</p>
     </div>
 
@@ -138,8 +139,26 @@
     const peer = new Peer();
     peer.on('open', (id) => {
       conn = peer.connect(hostPeerId);
-      conn.on('data', (msg) => {
-        if (msg && (msg.type === 'RESET_VOTE' || msg.type === 'RESET_VOTES')) {
+      conn.on('data', (data) => {
+        if (!data) return;
+        if (data.type === 'INIT_GAME_INFO') {
+          const title = (data.gameTitle || '').toUpperCase();
+          if (title.includes('WEAKEST') || title.includes('LINK')) {
+            const subText = document.getElementById('vote-sub-text');
+            if (subText) subText.textContent = "Who is the weakest link? Vote to eliminate!";
+            const players = data.playersList || [];
+            if (voteGrid && players.length > 0) {
+              voteGrid.innerHTML = `
+                <div style="font-size:0.9rem;color:#94a3b8;font-weight:700;letter-spacing:1px;margin-bottom:6px;text-align:center;">VOTE: WHO IS THE WEAKEST LINK?</div>
+                ${players.map(p => `
+                  <button onclick="castVote('${p}')" style="display:block;width:100%;padding:14px;margin-bottom:8px;font-size:1.1rem;font-weight:800;font-family:inherit;border-radius:10px;border:2px solid #ef4444;background:rgba(239,68,68,0.15);color:#ffffff;cursor:pointer;transition:transform 0.15s ease;">
+                    ❌ ${p}
+                  </button>
+                `).join('')}
+              `;
+            }
+          }
+        } else if (data.type === 'RESET_VOTE' || data.type === 'RESET_VOTES') {
           // Show vote buttons again, hide the confirmation screen
           voteGrid.classList.remove('hidden');
           votedCard.classList.add('hidden');
@@ -147,8 +166,10 @@
       });
     });
 
-    document.getElementById('vote-deal-btn').addEventListener('click', () => castVote('deal'));
-    document.getElementById('vote-nodeal-btn').addEventListener('click', () => castVote('nodeal'));
+    const dealBtn = document.getElementById('vote-deal-btn');
+    const noDealBtn = document.getElementById('vote-nodeal-btn');
+    if (dealBtn) dealBtn.addEventListener('click', () => castVote('deal'));
+    if (noDealBtn) noDealBtn.addEventListener('click', () => castVote('nodeal'));
 
     function castVote(voteType) {
       if (navigator.vibrate) navigator.vibrate(80);
@@ -158,6 +179,7 @@
       voteGrid.classList.add('hidden');
       votedCard.classList.remove('hidden');
     }
+    window.castVote = castVote;
   </script>
 </body>
 </html>

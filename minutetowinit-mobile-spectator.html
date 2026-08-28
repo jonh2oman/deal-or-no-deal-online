@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minute to Win It - Mobile Follow Along</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #020617;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 16px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .mobile-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .game-title {
+      font-family: 'Teko', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fef08a;
+      text-align: center;
+      margin-bottom: 4px;
+      letter-spacing: 2px;
+    }
+    .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #94a3b8;
+    }
+    .clock-box {
+      text-align: center;
+      padding: 20px 10px;
+    }
+    .giant-clock {
+      font-family: 'Teko', sans-serif;
+      font-size: 6.5rem;
+      line-height: 1;
+      font-weight: 700;
+      color: #38bdf8;
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.5);
+      letter-spacing: 4px;
+    }
+    .giant-clock.warning {
+      color: #facc15;
+      text-shadow: 0 0 30px rgba(250, 204, 21, 0.6);
+    }
+    .giant-clock.danger {
+      color: #ef4444;
+      text-shadow: 0 0 35px rgba(239, 68, 68, 0.8);
+      animation: pulseDanger 1s infinite alternate;
+    }
+    @keyframes pulseDanger {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.04); }
+    }
+    .lives-row {
+      text-align: center;
+      font-size: 2.2rem;
+      letter-spacing: 6px;
+      margin-top: 4px;
+    }
+    .challenge-title {
+      font-family: 'Teko', sans-serif;
+      font-size: 2.2rem;
+      color: #fef08a;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    .challenge-rules {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-title">⏱️ MINUTE TO WIN IT</div>
+
+  <div class="mobile-card clock-box">
+    <div class="label">60-SECOND COUNTDOWN</div>
+    <div class="giant-clock" id="clock-display-tv">00:60</div>
+    <div class="lives-row" id="lives-display-tv">❤️❤️❤️</div>
+  </div>
+
+  <div class="mobile-card">
+    <div class="label">CHALLENGE</div>
+    <div class="challenge-title" id="challenge-name-tv">JUNK IN THE TRUNK</div>
+    <div class="challenge-rules" id="challenge-rules-tv">Shake 8 ping pong balls out of a tissue box strapped to your waist in under 60 seconds without using your hands!</div>
+  </div>
+
+  <script>
+    const bc = new BroadcastChannel('minutetowinit_stage_broadcast');
+    function render(state) {
+      if (!state) return;
+      const clockEl = document.getElementById('clock-display-tv');
+      const secs = state.timeLeft !== undefined ? state.timeLeft : 60;
+      clockEl.textContent = `00:${secs.toString().padStart(2, '0')}`;
+      
+      clockEl.className = 'giant-clock';
+      if (secs <= 10 && secs > 0) {
+        clockEl.classList.add('danger');
+      } else if (secs <= 20) {
+        clockEl.classList.add('warning');
+      }
+
+      const livesCount = state.lives !== undefined ? state.lives : 3;
+      document.getElementById('lives-display-tv').textContent = '❤️'.repeat(Math.max(0, livesCount)) + '🖤'.repeat(Math.max(0, 3 - livesCount));
+
+      document.getElementById('challenge-name-tv').textContent = state.challengeName || 'CHALLENGE';
+      document.getElementById('challenge-rules-tv').textContent = state.challengeRules || '';
+    }
+    bc.onmessage = e => { if (e.data && e.data.type === 'SYNC_MINUTETOWINIT_STATE') render(e.data.state); };
+    try { const s = localStorage.getItem('minutetowinit_last_state'); if (s) render(JSON.parse(s)); } catch(_) {}
+  </script>
+</body>
+</html>

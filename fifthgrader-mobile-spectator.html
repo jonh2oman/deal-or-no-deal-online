@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5th Grader - Mobile Follow Along</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #020617;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 16px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .mobile-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .game-title {
+      font-family: 'Teko', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fef08a;
+      text-align: center;
+      margin-bottom: 4px;
+      letter-spacing: 2px;
+    }
+    .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #94a3b8;
+    }
+    .value {
+      font-family: 'Teko', sans-serif;
+      font-size: 1.8rem;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .question-box {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #ffffff;
+      margin-top: 6px;
+    }
+    .answer-box {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: rgba(34, 197, 94, 0.2);
+      border: 2px solid #22c55e;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #86efac;
+    }
+    .subject-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .grid-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #cbd5e1;
+    }
+    .grid-item.active {
+      background: rgba(234, 179, 8, 0.25);
+      border-color: #facc15;
+      color: #fef08a;
+      box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
+    }
+    .grid-item.cleared {
+      opacity: 0.3;
+      background: rgba(0, 0, 0, 0.4);
+      border-color: transparent;
+      text-decoration: line-through;
+    }
+    .dropout-banner {
+      background: rgba(239, 68, 68, 0.25);
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      font-family: 'Teko', sans-serif;
+      font-size: 1.8rem;
+      color: #fca5a5;
+      margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-title">🎒 5TH GRADER</div>
+
+  <div id="dropout-banner" class="dropout-banner" style="display: none;">
+    ❌ CONTESTANT HAS DROPPED OUT!
+  </div>
+
+  <div class="mobile-card" style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <div class="label">ACTIVE SUBJECT & PRIZE</div>
+      <div class="value" id="active-subject-tv" style="color: #facc15;">—</div>
+    </div>
+    <div style="text-align:right;">
+      <div class="label">CLASSMATE HELPER</div>
+      <div class="value" id="classmate-tv" style="color: #38bdf8;">ALEX</div>
+    </div>
+  </div>
+
+  <div class="mobile-card">
+    <div class="label">QUESTION</div>
+    <div class="question-box" id="question-text-tv">Loading question...</div>
+    <div class="answer-box" id="answer-box-tv" style="display: none;">
+      <span style="font-size: 0.8rem; color: #86efac; display: block; font-weight: 700; letter-spacing: 1px;">REVEALED ANSWER:</span>
+      <span id="answer-text-tv">—</span>
+    </div>
+  </div>
+
+  <div class="mobile-card">
+    <div class="label">SUBJECT BOARD</div>
+    <div class="subject-grid" id="subject-grid-tv"></div>
+  </div>
+
+  <script>
+    const SUBJECTS = [
+      { grade: "1st Grade", topic: "Animal Science", val: "$1,000" },
+      { grade: "1st Grade", topic: "Reading", val: "$2,000" },
+      { grade: "2nd Grade", topic: "US History", val: "$5,000" },
+      { grade: "2nd Grade", topic: "Astronomy", val: "$10,000" },
+      { grade: "3rd Grade", topic: "Earth Science", val: "$25,000" },
+      { grade: "3rd Grade", topic: "Math", val: "$50,000" },
+      { grade: "4th Grade", topic: "Geography", val: "$100,000" },
+      { grade: "4th Grade", topic: "Grammar", val: "$175,000" },
+      { grade: "5th Grade", topic: "World History", val: "$300,000" },
+      { grade: "5th Grade", topic: "1M Question", val: "$1,000,000" }
+    ];
+
+    const bc = new BroadcastChannel('fifthgrader_stage_broadcast');
+    function render(state) {
+      if (!state) return;
+      
+      const grade = state.grade || '';
+      const topic = state.topic || '';
+      const val = state.val || '';
+      document.getElementById('active-subject-tv').textContent = `${grade.toUpperCase()} ${topic.toUpperCase()} (${val})`;
+      document.getElementById('classmate-tv').textContent = state.classmate || 'ALEX';
+      document.getElementById('question-text-tv').textContent = state.text || '—';
+
+      const ansBox = document.getElementById('answer-box-tv');
+      const ansText = document.getElementById('answer-text-tv');
+      if (state.revealedAnswer && state.answer) {
+        ansBox.style.display = 'block';
+        ansText.textContent = state.answer;
+      } else {
+        ansBox.style.display = 'none';
+      }
+
+      const dropoutBanner = document.getElementById('dropout-banner');
+      if (dropoutBanner) {
+        dropoutBanner.style.display = state.droppedOut ? 'block' : 'none';
+      }
+
+      const grid = document.getElementById('subject-grid-tv');
+      grid.innerHTML = '';
+      const cleared = new Set(state.clearedSubjects || []);
+      SUBJECTS.forEach((s, idx) => {
+        const item = document.createElement('div');
+        item.className = `grid-item ${idx === state.subjectIdx ? 'active' : ''} ${cleared.has(idx) ? 'cleared' : ''}`;
+        item.innerHTML = `<span>${s.grade}: ${s.topic}</span><span style="font-family:'Teko',sans-serif;font-size:1.1rem;">${s.val}</span>`;
+        grid.appendChild(item);
+      });
+    }
+    bc.onmessage = e => { if (e.data && e.data.type === 'SYNC_FIFTHGRADER_STATE') render(e.data.state); };
+    try { const s = localStorage.getItem('fifthgrader_last_state'); if (s) render(JSON.parse(s)); } catch(_) {}
+  </script>
+</body>
+</html>

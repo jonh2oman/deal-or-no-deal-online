@@ -733,18 +733,18 @@ class GameController {
 
         this.updateStatusBanner(
           `REVEALED: ${targetCase.prize.name}!`,
-          `Open ${remainingInRound} more case${remainingInRound > 1 ? 's' : ''} before Flight Control calls.`,
+          `Open ${remainingInRound} more case${remainingInRound > 1 ? 's' : ''} before the Banker calls.`,
           isHighValue ? 'HIGH_REVEAL' : 'LOW_REVEAL'
         );
       } else {
         // Last case of the round!
         this.pendingNextStep = 'BANKER_OFFER';
-        statusNote = `Round ${this.currentRoundIndex + 1} Complete! Flight Control is calling with an offer!`;
-        continueBtnText = "ANSWER FLIGHT CONTROL CALL 📡";
+        statusNote = `Round ${this.currentRoundIndex + 1} Complete! The Banker is calling with an offer!`;
+        continueBtnText = "ANSWER BANKER CALL 📞";
 
         this.updateStatusBanner(
           `REVEALED: ${targetCase.prize.name}!`,
-          `Round ${this.currentRoundIndex + 1} complete! Click button to take Flight Control's call.`,
+          `Round ${this.currentRoundIndex + 1} complete! Click to answer the Banker's call.`,
           isHighValue ? 'HIGH_REVEAL' : 'LOW_REVEAL'
         );
       }

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal or No Deal - Live Mobile Player Display</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background: #020617;
+      margin: 0;
+      padding: 12px;
+      color: #ffffff;
+    }
+
+    .mobile-spectator-container {
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mobile-header-box {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .mobile-status-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid var(--sky-blue);
+      color: var(--sky-blue);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .mobile-prizes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mobile-prize-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mobile-prize-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--glass-border);
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .mobile-prize-item.opened {
+      opacity: 0.25;
+      text-decoration: line-through;
+      background: rgba(0, 0, 0, 0.4);
+      border-color: transparent;
+    }
+
+    .mobile-prize-item.low {
+      color: var(--sky-blue);
+    }
+
+    .mobile-prize-item.high {
+      color: #facc15;
+    }
+
+    .mobile-cases-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .mobile-case-btn {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border: 2px solid var(--sky-blue);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-case-btn.opened {
+      opacity: 0.3;
+      background: #0f172a;
+      border-color: #334155;
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-spectator-container">
+    <div class="mobile-header-box">
+      <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 900; color: #ffffff;" id="brand-title">
+        🧳 DEAL OR NO DEAL
+      </div>
+      <div class="mobile-status-tag" id="mobile-status" style="margin-top: 6px;">
+        LIVE GAME IN PROGRESS
+      </div>
+    </div>
+
+    <!-- Active Offer Banner (if Banker is calling) -->
+    <div class="mobile-header-box hidden" id="mobile-offer-banner" style="background: rgba(234, 179, 8, 0.25); border-color: #facc15;">
+      <div style="font-family: var(--font-display); font-size: 1.1rem; color: #fef08a;">INCOMING BANKER OFFER</div>
+      <div style="font-family: var(--font-display); font-size: 2.8rem; font-weight: 900; color: #ffffff;" id="mobile-offer-amount">$0</div>
+    </div>
+
+    <!-- Sealed Case Info -->
+    <div style="background: rgba(2, 132, 199, 0.2); border: 1px solid var(--sky-blue); border-radius: 12px; padding: 10px; text-align: center; font-family: var(--font-display); font-size: 1.2rem; color: #fef08a;">
+      SEALED CONTESTANT CASE: <strong id="mobile-sealed-case" style="color: #ffffff;">#--</strong>
+    </div>
+
+    <!-- 15 Briefcases Grid -->
+    <div style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: #cbd5e1;">
+      BRIEFCASE BOARD STATUS:
+    </div>
+    <div class="mobile-cases-grid" id="mobile-cases-grid">
+      <!-- 15 Cases populated dynamically -->
+    </div>
+
+    <!-- Left (Low) & Right (High) Prizes -->
+    <div style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: #cbd5e1; margin-top: 6px;">
+      REMAINING PRIZES IN PLAY:
+    </div>
+    <div class="mobile-prizes-grid">
+      <div class="mobile-prize-list" id="mobile-low-prizes"></div>
+      <div class="mobile-prize-list" id="mobile-high-prizes"></div>
+    </div>
+  </div>
+
+  <script src="deal-mobile-spectator.js"></script>
+</body>
+</html>

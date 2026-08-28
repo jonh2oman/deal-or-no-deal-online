@@ -104,6 +104,7 @@ class FeudController {
         (voteData) => this.handleMobileVote(voteData)
       );
       mobilePeerManager.setGameInfo("FAMILY FEUD", [this.team1Name, this.team2Name]);
+      mobilePeerManager.setMobileTarget('buzzer.html', true);
     }
   }
 

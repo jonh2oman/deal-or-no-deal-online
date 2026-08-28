@@ -118,6 +118,7 @@ class GameController {
           this.broadcastState();
         }
       );
+      mobilePeerManager.setMobileTarget('deal-mobile-spectator.html', false);
     }
   }
 

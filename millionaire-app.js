@@ -38,6 +38,7 @@ class MillionaireController {
     if (typeof mobilePeerManager !== 'undefined') {
       mobilePeerManager.initHost(() => {}, () => {});
       mobilePeerManager.setGameInfo('WHO WANTS TO BE A MILLIONAIRE', ['CONTESTANT 1']);
+      mobilePeerManager.setMobileTarget('millionaire-mobile-spectator.html', false);
     }
   }
 

@@ -9,11 +9,14 @@ class MobilePeerManager {
     this.role = role; // 'host', 'buzzer', 'vote'
     this.peer = null;
     this.peerId = null;
+    this.hostPeerId = null;
     this.connections = [];
     this.buzzLocked = false;
     this.votes = { deal: 0, noDeal: 0, total: 0 };
     this.onBuzzCallback = null;
     this.onVoteCallback = null;
+    this.mobileTargetPage = 'buzzer.html';
+    this.mobileNeedsHostParam = true;
   }
 
   initHost(onBuzz, onVote) {
@@ -37,6 +40,7 @@ class MobilePeerManager {
 
     this.peer.on('open', (id) => {
       this.peerId = id;
+      this.hostPeerId = id;
       this.renderQRCode(id);
     });
 
@@ -72,6 +76,12 @@ class MobilePeerManager {
     });
   }
 
+  setMobileTarget(page, needsHostParam = true) {
+    this.mobileTargetPage = page;
+    this.mobileNeedsHostParam = needsHostParam;
+    if (this.hostPeerId) this.renderQRCode(this.hostPeerId);
+  }
+
   setGameInfo(gameTitle, playersList) {
     this.gameTitle = gameTitle;
     this.playersList = playersList;
@@ -86,7 +96,10 @@ class MobilePeerManager {
     qrContainer.innerHTML = '';
 
     const currentUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-    const targetUrl = `${currentUrl}/buzzer.html?host=${peerId}`;
+    const page = this.mobileTargetPage || 'buzzer.html';
+    const targetUrl = this.mobileNeedsHostParam
+      ? `${currentUrl}/${page}?host=${peerId}`
+      : `${currentUrl}/${page}`;
 
     if (typeof QRCode !== 'undefined') {
       new QRCode(qrContainer, {

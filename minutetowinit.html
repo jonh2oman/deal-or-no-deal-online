@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minute to Win It - Stage Host Control</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .minute-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .timer-console-glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .giant-clock-display {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      font-weight: 900;
+      color: #fef08a;
+      letter-spacing: 2px;
+      text-shadow: 0 0 25px rgba(254, 240, 138, 0.5);
+    }
+
+    .challenge-card-glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .lives-counter-box {
+      display: flex;
+      gap: 6px;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="stage-badge" id="brand-tag-code">
+          <span class="badge-text" id="brand-tag-text">MINUTE-1</span>
+          <span class="badge-icon">⏱️</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">MINUTE TO WIN IT</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Host Stage Controller</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+        </select>
+
+        <button id="qr-btn" class="tool-btn admin-highlight">
+          <span class="btn-icon">📱</span> <span class="btn-text">Mobile & QR</span>
+        </button>
+        <button id="spectator-btn" class="tool-btn">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn">
+          <span class="btn-icon" id="sound-icon">📺</span> <span class="btn-text" id="sound-text">PA Audio Only</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Timer</span>
+        </button>
+      </div>
+
+      <!-- Integrated Header Soundboard Row -->
+      <div class="header-soundboard-row">
+        <span class="soundboard-row-label">🎵 STAGE SOUNDBOARD:</span>
+        <div class="soundboard-buttons-row">
+          <button class="sound-fx-btn btn-sm" data-sound="chime">🔔 3-2-1 Go!</button>
+          <button class="sound-fx-btn btn-sm" data-sound="daily">🎲 Tick-Tock</button>
+          <button class="sound-fx-btn btn-sm" data-sound="buzzer">🚨 Time Expired!</button>
+          <button class="sound-fx-btn btn-sm" data-sound="win">🏆 Challenge Complete</button>
+          <button class="sound-fx-btn btn-sm" data-sound="theme">🎺 Theme Music</button>
+          <button class="sound-fx-btn btn-sm danger" data-sound="stop">🛑 Silence All</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="minute-layout">
+      <!-- Left: 60-Second Timer Console -->
+      <div class="timer-console-glass">
+        <div style="font-family: var(--font-display); font-size: 1.3rem; color: var(--sky-blue); font-weight: 800;">
+          STAGE COUNTDOWN TIMER
+        </div>
+        <div class="giant-clock-display" id="clock-display">01:00</div>
+        
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <button id="start-timer-btn" class="btn btn-primary" style="flex: 1; font-size: 1.1rem; padding: 12px;">▶ START 60s</button>
+          <button id="pause-timer-btn" class="btn btn-secondary" style="font-size: 1.1rem; padding: 12px;">⏸ PAUSE</button>
+          <button id="reset-timer-btn" class="btn danger-light" style="font-size: 1.1rem; padding: 12px;">🔄 60s</button>
+        </div>
+      </div>
+
+      <!-- Right: Active Challenge & Rules -->
+      <div class="challenge-card-glass">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="podium-status" id="level-heading-tag">LEVEL 1 OF 10 ($1,000)</span>
+          <select id="challenge-select" class="input-field select-tool" style="max-width: 320px;" onchange="minuteApp.selectChallenge(this.value)">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+
+        <h2 id="challenge-name-text" style="font-family: var(--font-display); font-size: 2rem; color: #ffffff; margin: 0;">
+          JUNK IN THE TRUNK
+        </h2>
+
+        <p id="challenge-rules-text" style="font-size: 1.05rem; color: #cbd5e1; line-height: 1.6;">
+          Shake 8 ping pong balls out of a tissue box strapped to your waist in under 60 seconds without using your hands!
+        </p>
+
+        <!-- Lives Counter per Contestant -->
+        <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 0.95rem; color: #ffffff; font-weight: 700;">Contestant Lives:</span>
+            <div class="lives-counter-box" id="lives-display">❤️❤️❤️</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="minuteApp.loseLife()" class="btn danger-light">💔 Fail Challenge (-1 Life)</button>
+            <button onclick="minuteApp.passChallenge()" class="btn btn-primary">🏆 Pass Challenge (+Points)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="peer-connection.js"></script>
+  <script src="audio.js"></script>
+  <script src="minutetowinit-app.js"></script>
+</body>
+</html>

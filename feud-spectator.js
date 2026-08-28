@@ -63,6 +63,12 @@ class FeudSpectatorController {
       statusHeading: document.getElementById('status-heading'),
       statusSubtext: document.getElementById('status-subtext')
     };
+
+    if (this.elements.strikeOverlay) {
+      this.elements.strikeOverlay.addEventListener('click', () => {
+        this.elements.strikeOverlay.classList.add('hidden');
+      });
+    }
   }
 
   handleMessage(data) {

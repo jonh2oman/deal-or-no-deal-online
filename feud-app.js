@@ -516,9 +516,17 @@ class FeudController {
     sounds.playBuzzer();
     this.broadcast.postMessage({ type: 'PLAY_SOUND', sound: 'buzzer' });
     this.broadcastState();
+
+    // Auto-dismiss giant strike overlay after 2.5 seconds (classic TV behavior)
+    if (this.strikeTimer) clearTimeout(this.strikeTimer);
+    this.strikeTimer = setTimeout(() => {
+      this.strikes = 0;
+      this.broadcastState();
+    }, 2500);
   }
 
   clearStrikes() {
+    if (this.strikeTimer) clearTimeout(this.strikeTimer);
     this.strikes = 0;
     this.broadcastState();
   }

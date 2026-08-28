@@ -140,6 +140,7 @@ class SpectatorController {
       if (this.elements.brandEventTitle) this.elements.brandEventTitle.textContent = state.branding.eventTitle || "DEAL OR NO DEAL";
       if (this.elements.brandEventSubtitle) this.elements.brandEventSubtitle.textContent = state.branding.eventSubtitle || "LIVE STAGE GAME SHOW";
       if (this.elements.brandTagCode) this.elements.brandTagCode.textContent = state.branding.eventTag || "DND-15";
+      document.title = `${state.branding.eventTitle || "Deal or No Deal"} - Stage Display`;
     }
 
     // Render Prize Boards

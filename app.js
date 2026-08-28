@@ -26,37 +26,37 @@ const ROUND_TARGETS = [4, 3, 2, 1, 1]; // Round 1: 4, Round 2: 3, Round 3: 2, Ro
 
 const HOST_BANTER = {
   START: [
-    `"Welcome aboard Gander Flight 15! Keep your tray tables stowed and your fingers crossed."`,
-    `"Pick your personal briefcase! Fun fact: Local rumor says Case #7 has extra lucky Newfoundland air inside."`,
-    `"Choose carefully! No pressure, but the entire Festival of Flight audience is counting on you!"`,
-    `"Select your lucky case! Is it fortune, fame, or a $0.25 gift card? Let's find out!"`
+    `"Welcome to Deal or No Deal! Keep your fingers crossed and choose your case wisely."`,
+    `"Pick your personal briefcase! Is it fortune, fame, or a $0.25 prize inside? Let's find out!"`,
+    `"Choose carefully! No pressure, but the entire audience is counting on you!"`,
+    `"Select your lucky case! Trust your instincts!"`
   ],
   LOW_REVEAL: [
-    `"BOOM! $0.25 is outta here! You can't even buy a stick of gum in Gander with that!"`,
-    `"Adios tiny prize! The Flight Controller is starting to sweat through his pristine suit."`,
-    `"Another low value down! Clear skies ahead for a high-value landing!"`,
+    `"BOOM! A low prize is outta here! Great job eliminating that small value!"`,
+    `"Adios tiny prize! The Banker is starting to sweat now!"`,
+    `"Another low value down! Clear skies ahead for a big win!"`,
     `"Small prize eliminated! The audience is loving this strategy!"`,
-    `"Scratch another small value off! We are flying high now!"`
+    `"Scratch another small value off the board! We are flying high now!"`
   ],
   HIGH_REVEAL: [
-    `"Ouch! That high prize just took a nosedive! Emergency oxygen masks deploy automatically..."`,
-    `"Big prize eliminated! Take a deep breath... blame the co-pilot!"`,
+    `"Ouch! That high prize just went up in smoke! Take a deep breath..."`,
+    `"Big prize eliminated! Stay calm and keep focused."`,
     `"Oof! Look confident and pretend that was all part of your master strategy!"`,
-    `"A high value is gone, but stay calm—the flight deck is still loaded!"`
+    `"A high value is gone, but stay calm—there are still big prizes on the board!"`
   ],
   BANKER_CALL: [
-    `"Ring ring! Flight Control is on the line. They claim they're offering cold hard cash!"`,
-    `"Incoming transmission from the tower! Hold your breath, folks, the Banker is opening his wallet."`,
-    `"Flight Control calling! Ask the crowd: Should we take the deal or push for free festival poutine for life?"`,
-    `"The tower is transmitting! Will this offer be sky-high or a low-altitude landing?"`
+    `"Ring ring! The Banker is on the line with an offer!"`,
+    `"Incoming offer from the Banker! Hold your breath, folks!"`,
+    `"The Banker is calling! Ask the crowd: Should we take the deal or keep playing?"`,
+    `"The Banker is transmitting an offer! Will it be sky-high?"`
   ],
   DEAL_ACCEPTED: [
-    `"DEAL ACCEPTED! Drinks are on our contestant tonight at the Festival of Flight!"`,
+    `"DEAL ACCEPTED! Congratulations to our contestant!"`,
     `"Smart play! Cash locked in! Give a massive hand for our winner!"`
   ],
   NO_DECLINED: [
-    `"NO DEAL! Our contestant has nerves of pure titanium! Onward to the next round!"`,
-    `"Refused! The Banker is pulling his hair out while we keep flying!"`
+    `"NO DEAL! Our contestant has nerves of steel! Onward to the next round!"`,
+    `"Refused! The Banker is pulling his hair out while we keep playing!"`
   ]
 };
 
@@ -158,6 +158,7 @@ class GameController {
     if (this.elements.brandEventTitle) this.elements.brandEventTitle.textContent = b.eventTitle || "DEAL OR NO DEAL";
     if (this.elements.brandEventSubtitle) this.elements.brandEventSubtitle.textContent = b.eventSubtitle || "LIVE STAGE GAME SHOW";
     if (this.elements.brandTagCode) this.elements.brandTagCode.textContent = b.eventTag || "DND-15";
+    document.title = `${b.eventTitle || "Deal or No Deal"} - Host Control`;
   }
 
   initDOM() {
@@ -597,7 +598,8 @@ class GameController {
         const remainingToOpen = this.casesToOpenThisRound - this.casesOpenedThisRound;
         this.elements.roundIndicator.textContent = `ROUND ${this.currentRoundIndex + 1}: OPEN ${remainingToOpen} MORE CASE${remainingToOpen > 1 ? 'S' : ''}`;
       } else if (this.gameState === 'BANKER_OFFER') {
-        this.elements.roundIndicator.textContent = `FLIGHT CONTROL CALLING!`;
+        const bankerName = (this.branding && this.branding.bankerName) ? this.branding.bankerName.toUpperCase() : "THE BANKER";
+        this.elements.roundIndicator.textContent = `${bankerName} CALLING!`;
       } else if (this.gameState === 'FINAL_SWAP') {
         this.elements.roundIndicator.textContent = `FINAL CASE DECISION`;
       }
@@ -632,8 +634,9 @@ class GameController {
 
       this.renderBriefcases();
       this.updatePodium();
+      const bankerName = (this.branding && this.branding.bankerName) ? this.branding.bankerName.toUpperCase() : "THE BANKER";
       this.updateStatusBanner(
-        `CASE #${this.playerCaseNumber} SEALED ON FLIGHT DECK!`,
+        `CASE #${this.playerCaseNumber} IS SEALED & DELIVERED TO ${bankerName}!`,
         `Round 1: Click ${this.casesToOpenThisRound} briefcases to eliminate prizes from the board.`,
         'START'
       );
@@ -708,18 +711,22 @@ class GameController {
     this.gameState = 'BANKER_OFFER';
     this.offerBroadcasted = false;
     this.updatePodium();
-    this.updateStatusBanner("INCOMING TRANSMISSION...", "Flight Control is transmitting a deal offer!", 'BANKER_CALL');
+    const bankerName = (this.branding && this.branding.bankerName) ? this.branding.bankerName : "The Banker";
+    this.updateStatusBanner("INCOMING OFFER...", `${bankerName} is transmitting a deal offer!`, 'BANKER_CALL');
 
     // Get unrevealed prizes
     const remainingPrizes = this.cases.filter(c => !c.opened).map(c => c.prize);
     this.suggestedOffer = FlightControllerBanker.calculateOffer(remainingPrizes, this.currentRoundIndex + 1);
     this.currentOffer = Object.assign({}, this.suggestedOffer);
 
-    // Reset tab states
+    // Reset tab states & custom prize inputs
     this.elements.tabSuggestedBtn.classList.add('active');
     this.elements.tabCustomBtn.classList.remove('active');
     this.elements.customOfferBox.classList.add('hidden');
     this.elements.customOfferAmount.value = this.suggestedOffer.offerAmount;
+    if (this.elements.customOfferPrize) {
+      this.elements.customOfferPrize.value = '';
+    }
 
     // Staging button reset
     this.elements.broadcastOfferBtn.classList.remove('hidden');
@@ -749,9 +756,10 @@ class GameController {
         this.elements.bankerPhysicalDisplay.classList.add('hidden');
       }
     } else {
-      this.elements.offerLabelHeading.textContent = "BANKER OFFER";
+      const bankerName = (this.branding && this.branding.bankerName) ? this.branding.bankerName.toUpperCase() : "BANKER";
+      this.elements.offerLabelHeading.textContent = `${bankerName} OFFER`;
       this.elements.offerTypeBadge.textContent = "INCOMING TRANSMISSION";
-      this.elements.bankerTitleHeading.textContent = "FLIGHT CONTROL CALLING...";
+      this.elements.bankerTitleHeading.textContent = `${bankerName} CALLING...`;
       this.elements.bankerOfferCard.classList.remove('custom-host-card');
       this.elements.bankerPhysicalDisplay.classList.add('hidden');
     }
@@ -781,7 +789,7 @@ class GameController {
     this.showResultModal({
       icon: '🤝',
       title: 'DEAL ACCEPTED!',
-      subtitle: `You accepted ${this.currentOffer.isCustom ? 'the Host Offer' : "Flight Control's offer"} at the Festival of Flight!`,
+      subtitle: `You accepted ${this.currentOffer.isCustom ? 'the Host Offer' : "the Banker's offer"}!`,
       prizeValue: this.acceptedOfferValue,
       caseInfo: `Your original sealed Case #${this.playerCaseNumber} contained: ${playerCase.prize.name}`
     });
@@ -795,6 +803,9 @@ class GameController {
     this.broadcast.postMessage({ type: 'PLAY_SOUND', sound: 'stopRing' });
     this.broadcast.postMessage({ type: 'PLAY_SOUND', sound: 'nodeal' });
     this.elements.bankerModal.classList.add('hidden');
+    if (this.elements.customOfferPrize) {
+      this.elements.customOfferPrize.value = '';
+    }
     this.currentRoundIndex++;
 
     // Check how many unopened non-player cases remain

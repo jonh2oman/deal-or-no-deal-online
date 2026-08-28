@@ -317,9 +317,15 @@
         </div>
 
         <div id="section-questions" class="settings-tab-section hidden">
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
-            Preset survey questions loaded automatically. You can switch questions using the top dropdown during the game.
-          </p>
+          <div class="admin-actions-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <button id="reset-default-questions-btn" class="btn btn-secondary" type="button">
+              <span>🔄</span> Reset Default Questions
+            </button>
+            <span class="prizes-count-tag" id="questions-count-tag">5 Total Questions</span>
+          </div>
+          <div id="questions-editor-container" style="max-height: 380px; overflow-y: auto; padding-right: 6px;">
+            <!-- Questions dynamically generated -->
+          </div>
         </div>
       </div>
 

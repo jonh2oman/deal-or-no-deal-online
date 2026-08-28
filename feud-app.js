@@ -272,6 +272,38 @@ class FeudController {
       });
     }
 
+    // Settings Nav Tabs (Branding vs Questions)
+    if (this.elements.tabBrandingBtn && this.elements.tabQuestionsBtn) {
+      this.elements.tabBrandingBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        this.elements.tabBrandingBtn.classList.add('active');
+        this.elements.tabQuestionsBtn.classList.remove('active');
+        this.elements.sectionBranding.classList.remove('hidden');
+        this.elements.sectionQuestions.classList.add('hidden');
+      });
+
+      this.elements.tabQuestionsBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        this.elements.tabQuestionsBtn.classList.add('active');
+        this.elements.tabBrandingBtn.classList.remove('active');
+        this.elements.sectionQuestions.classList.remove('hidden');
+        this.elements.sectionBranding.classList.add('hidden');
+        this.renderQuestionsEditor();
+      });
+    }
+
+    const resetQuestionsBtn = document.getElementById('reset-default-questions-btn');
+    if (resetQuestionsBtn) {
+      resetQuestionsBtn.addEventListener('click', () => {
+        sounds.playSelect();
+        this.questions = JSON.parse(JSON.stringify(PRESET_FEUD_QUESTIONS));
+        this.saveQuestions();
+        this.renderQuestionList();
+        this.loadQuestion(0);
+        this.renderQuestionsEditor();
+      });
+    }
+
     // Modal
     this.elements.adminBtn.addEventListener('click', () => {
       this.elements.settingEventTitle.value = this.branding.eventTitle || "";
@@ -293,6 +325,7 @@ class FeudController {
       b.defaultTheme = this.elements.settingTheme.value;
       this.saveBranding(b);
       this.setTheme(b.defaultTheme);
+      this.saveQuestionsFromEditor();
       this.elements.adminModal.classList.add('hidden');
     });
 
@@ -301,6 +334,76 @@ class FeudController {
       this.strikes = 0;
       this.loadQuestion(this.activeQuestionIndex);
     });
+  }
+
+  loadQuestions() {
+    try {
+      const saved = localStorage.getItem('feud_questions_v1');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(PRESET_FEUD_QUESTIONS));
+  }
+
+  saveQuestions() {
+    try {
+      localStorage.setItem('feud_questions_v1', JSON.stringify(this.questions));
+    } catch (e) {}
+  }
+
+  renderQuestionsEditor() {
+    const container = document.getElementById('questions-editor-container');
+    if (!container) return;
+
+    container.innerHTML = this.questions.map((q, qIdx) => `
+      <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+        <div style="font-weight: 800; color: var(--sky-blue); margin-bottom: 8px;">QUESTION #${qIdx + 1}:</div>
+        <input type="text" class="input-field editor-q-text" data-qidx="${qIdx}" value="${q.question}" style="margin-bottom: 10px; width: 100%;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          ${q.answers.map((a, aIdx) => `
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span style="font-size: 0.8rem; color: var(--text-muted); width: 20px;">#${aIdx + 1}</span>
+              <input type="text" class="input-field editor-ans-text" data-qidx="${qIdx}" data-aidx="${aIdx}" value="${a.text}" placeholder="Answer" style="flex: 1;">
+              <input type="number" class="input-field editor-ans-pts" data-qidx="${qIdx}" data-aidx="${aIdx}" value="${a.pts}" placeholder="Pts" style="width: 65px;">
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  saveQuestionsFromEditor() {
+    const container = document.getElementById('questions-editor-container');
+    if (!container) return;
+
+    const qInputs = container.querySelectorAll('.editor-q-text');
+    qInputs.forEach(qInput => {
+      const qIdx = parseInt(qInput.getAttribute('data-qidx'), 10);
+      if (this.questions[qIdx]) {
+        this.questions[qIdx].question = qInput.value.trim() || `Question #${qIdx + 1}`;
+      }
+    });
+
+    const ansTexts = container.querySelectorAll('.editor-ans-text');
+    ansTexts.forEach(ansInput => {
+      const qIdx = parseInt(ansInput.getAttribute('data-qidx'), 10);
+      const aIdx = parseInt(ansInput.getAttribute('data-aidx'), 10);
+      if (this.questions[qIdx] && this.questions[qIdx].answers[aIdx]) {
+        this.questions[qIdx].answers[aIdx].text = ansInput.value.trim().toUpperCase() || `ANSWER #${aIdx + 1}`;
+      }
+    });
+
+    const ansPts = container.querySelectorAll('.editor-ans-pts');
+    ansPts.forEach(ptsInput => {
+      const qIdx = parseInt(ptsInput.getAttribute('data-qidx'), 10);
+      const aIdx = parseInt(ptsInput.getAttribute('data-aidx'), 10);
+      if (this.questions[qIdx] && this.questions[qIdx].answers[aIdx]) {
+        this.questions[qIdx].answers[aIdx].pts = parseInt(ptsInput.value, 10) || 10;
+      }
+    });
+
+    this.saveQuestions();
+    this.renderQuestionList();
+    this.loadQuestion(this.activeQuestionIndex);
   }
 
   setMultiplier(mult) {

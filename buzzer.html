@@ -124,6 +124,38 @@
       font-weight: 800;
       color: #fca5a5;
     }
+
+    /* Reset Toast Notification */
+    .reset-toast {
+      background: linear-gradient(135deg, #059669, #10b981);
+      border: 2px solid #34d399;
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1.1rem;
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .giant-buzz-btn.ready-pulse {
+      animation: greenPulse 0.8s ease-in-out;
+    }
+
+    @keyframes greenPulse {
+      0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.8); }
+      70% { box-shadow: 0 0 0 25px rgba(52, 211, 153, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+    }
   </style>
 </head>
 <body>
@@ -140,6 +172,11 @@
     <div class="team-select-box">
       <button class="team-opt-btn selected" id="team1-btn" type="button">TEAM 1</button>
       <button class="team-opt-btn" id="team2-btn" type="button">TEAM 2</button>
+    </div>
+
+    <!-- Reset Toast Banner -->
+    <div class="reset-toast hidden" id="reset-toast">
+      ⚡ BUZZER RESET! GET READY TO BUZZ!
     </div>
 
     <!-- Lockout Display (Hidden by default) -->
@@ -174,6 +211,7 @@
     const statusTag = document.getElementById('status-tag');
     const lockoutBox = document.getElementById('lockout-box');
     const lockoutText = document.getElementById('lockout-text');
+    const resetToast = document.getElementById('reset-toast');
 
     team1Btn.addEventListener('click', () => {
       selectedTeam = "TEAM 1";
@@ -210,6 +248,19 @@
           lockoutBox.classList.remove('hidden');
         } else if (data.type === 'RESET_BUZZER') {
           lockoutBox.classList.add('hidden');
+          resetToast.classList.remove('hidden');
+          statusTag.textContent = "BUZZER READY & ACTIVE ⚡";
+          statusTag.style.color = "#34d399";
+          
+          buzzBtn.classList.add('ready-pulse');
+          setTimeout(() => buzzBtn.classList.remove('ready-pulse'), 900);
+          
+          if (navigator.vibrate) navigator.vibrate([60, 50, 60]);
+
+          setTimeout(() => {
+            resetToast.classList.add('hidden');
+          }, 3000);
+
           startTime = Date.now();
         }
       });

@@ -1850,3 +1850,16 @@ body.spectator-mode .status-content p {
 body.spectator-mode .offer-amount {
   font-size: 4.5rem;
 }
+
+/* Wheel of Fortune Space Tiles */
+.space-tile {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  pointer-events: none;
+}
+.space-tile-tv {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}

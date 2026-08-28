@@ -218,8 +218,8 @@
         <!-- Lifelines Row -->
         <div class="lifelines-row">
           <button id="lifeline-5050" class="lifeline-btn">🌓 50 : 50</button>
-          <button id="lifeline-audience" class="lifeline-btn">👥 Ask Audience</button>
-          <button id="lifeline-phone" class="lifeline-btn">📞 Phone Friend</button>
+          <button id="ask-audience-btn" class="lifeline-btn">👥 Ask Audience</button>
+          <button id="phone-friend-btn" class="lifeline-btn">📞 Phone Friend</button>
         </div>
 
         <!-- Question Text Box -->
@@ -248,6 +248,29 @@
       <!-- Right Money Ladder Sidebar -->
       <div class="money-ladder-sidebar" id="money-ladder">
         <!-- 15 Steps generated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Mobile & QR Code -->
+  <div class="modal-overlay hidden" id="qr-modal">
+    <div class="modal-glass admin-modal-content" style="max-width: 480px; text-align: center;">
+      <div class="modal-header center-text">
+        <div class="modal-title-group">
+          <h2>📱 Mobile Buzzers</h2>
+          <p>Scan with smartphone camera to connect live!</p>
+        </div>
+        <button id="close-qr-btn" class="close-modal-btn" type="button">&times;</button>
+      </div>
+      <div style="margin: 20px 0; display: flex; flex-direction: column; align-items: center;">
+        <div id="qrcode-canvas" style="padding: 16px; background: #ffffff; border-radius: 16px;"></div>
+        <p style="margin-top: 12px; font-size: 0.85rem; color: var(--sky-blue);" id="qr-status-text">Scan QR Code on Mobile Phone</p>
+        <a id="qr-direct-link" href="#" target="_blank" style="color: var(--text-muted); font-size: 0.8rem; word-break: break-all; margin-top: 6px;"></a>
+      </div>
+      <div class="modal-footer">
+        <button id="reset-buzzers-btn" class="btn btn-primary" type="button" style="width: 100%;">
+          <span>🔄</span> Reset Mobile Connections
+        </button>
       </div>
     </div>
   </div>

@@ -34,6 +34,11 @@ class MillionaireController {
     this.bindEvents();
     this.renderLadder();
     this.renderQuestion();
+
+    if (typeof mobilePeerManager !== 'undefined') {
+      mobilePeerManager.initHost(() => {}, () => {});
+      mobilePeerManager.setGameInfo('WHO WANTS TO BE A MILLIONAIRE', ['CONTESTANT 1']);
+    }
   }
 
   initDOM() {
@@ -55,6 +60,12 @@ class MillionaireController {
     this.lifeline5050 = document.getElementById('lifeline-5050');
     this.lifelineAudience = document.getElementById('lifeline-audience');
     this.lifelinePhone = document.getElementById('lifeline-phone');
+    this.askAudienceBtn = document.getElementById('ask-audience-btn') || this.lifelineAudience;
+    this.phoneFriendBtn = document.getElementById('phone-friend-btn') || this.lifelinePhone;
+
+    this.qrBtn = document.getElementById('qr-btn');
+    this.qrModal = document.getElementById('qr-modal');
+    this.closeQrBtn = document.getElementById('close-qr-btn');
 
     this.soundFxBtns = document.querySelectorAll('.sound-fx-btn');
   }
@@ -105,12 +116,18 @@ class MillionaireController {
       });
     }
 
+    if (this.qrBtn) this.qrBtn.addEventListener('click', () => { if (this.qrModal) this.qrModal.classList.remove('hidden'); });
+    if (this.closeQrBtn) this.closeQrBtn.addEventListener('click', () => { if (this.qrModal) this.qrModal.classList.add('hidden'); });
+
     if (this.resetBtn) {
       this.resetBtn.addEventListener('click', () => {
         this.currentStep = 0;
         this.selectedOption = null;
         this.revealedCorrect = false;
         this.hiddenOptions.clear();
+        if (this.lifeline5050) this.lifeline5050.disabled = false;
+        if (this.askAudienceBtn) this.askAudienceBtn.disabled = false;
+        if (this.phoneFriendBtn) this.phoneFriendBtn.disabled = false;
         this.renderLadder();
         this.renderQuestion();
         this.broadcastState();
@@ -126,6 +143,24 @@ class MillionaireController {
         this.hiddenOptions.add(wrongs[1]);
         this.lifeline5050.disabled = true;
         this.renderQuestion();
+        this.broadcastState();
+      });
+    }
+
+    if (this.askAudienceBtn) {
+      this.askAudienceBtn.addEventListener('click', () => {
+        if (this.askAudienceBtn.disabled) return;
+        this.askAudienceBtn.disabled = true;
+        alert('Ask the Audience lifeline used! Reveal audience poll results.');
+        this.broadcastState();
+      });
+    }
+
+    if (this.phoneFriendBtn) {
+      this.phoneFriendBtn.addEventListener('click', () => {
+        if (this.phoneFriendBtn.disabled) return;
+        this.phoneFriendBtn.disabled = true;
+        alert('Phone a Friend lifeline used! 30-second call begins now.');
         this.broadcastState();
       });
     }

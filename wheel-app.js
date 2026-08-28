@@ -92,6 +92,9 @@ class WheelController {
     this.cardP2 = document.getElementById('card-p2');
     this.cardP3 = document.getElementById('card-p3');
 
+    this.solvePuzzleBtn = document.getElementById('solve-puzzle-btn');
+    this.bankruptBtn = document.getElementById('bankrupt-btn');
+
     this.soundFxBtns = document.querySelectorAll('.sound-fx-btn');
   }
 
@@ -115,6 +118,31 @@ class WheelController {
 
     if (this.resetBtn) {
       this.resetBtn.addEventListener('click', () => this.nextPuzzle());
+    }
+
+    if (this.solvePuzzleBtn) {
+      this.solvePuzzleBtn.addEventListener('click', () => {
+        for (let char of this.currentPhrase) {
+          if (char !== ' ') {
+            this.revealedLetters.add(char.toUpperCase());
+          }
+        }
+        sounds.playFanfare();
+        this.renderKeyboard();
+        this.renderPuzzleGrid();
+        this.broadcastState();
+      });
+    }
+
+    if (this.bankruptBtn) {
+      this.bankruptBtn.addEventListener('click', () => {
+        if (this.activeTurn === 0) this.p1RoundScore = 0;
+        else if (this.activeTurn === 1) this.p2RoundScore = 0;
+        else if (this.activeTurn === 2) this.p3RoundScore = 0;
+        sounds.playBuzzer();
+        this.renderScores();
+        this.broadcastState();
+      });
     }
 
     [this.p1NameInput, this.p2NameInput, this.p3NameInput].forEach((inp, idx) => {
@@ -268,12 +296,22 @@ class WheelController {
 
     const count = (this.currentPhrase.match(new RegExp(letter, 'g')) || []).length;
 
+    const vowels = ['A', 'E', 'I', 'O', 'U'];
+    if (vowels.includes(letter.toUpperCase())) {
+      // Deduct buy-a-vowel cost
+      if (this.activeTurn === 0) this.p1RoundScore = Math.max(0, (this.p1RoundScore || 0) - 250);
+      else if (this.activeTurn === 1) this.p2RoundScore = Math.max(0, (this.p2RoundScore || 0) - 250);
+      else if (this.activeTurn === 2) this.p3RoundScore = Math.max(0, (this.p3RoundScore || 0) - 250);
+    } else {
+      // Award spin value × occurrences of the letter
+      const points = (this.activeSpinValue || 0) * count;
+      if (this.activeTurn === 0) this.p1RoundScore = (this.p1RoundScore || 0) + points;
+      else if (this.activeTurn === 1) this.p2RoundScore = (this.p2RoundScore || 0) + points;
+      else if (this.activeTurn === 2) this.p3RoundScore = (this.p3RoundScore || 0) + points;
+    }
+
     if (count > 0) {
       sounds.playDing();
-      const points = count * (this.activeSpinValue || 250);
-      if (this.activeTurn === 0) this.p1RoundScore += points;
-      else if (this.activeTurn === 1) this.p2RoundScore += points;
-      else if (this.activeTurn === 2) this.p3RoundScore += points;
     } else {
       sounds.playBuzzer();
       this.nextTurn();
@@ -283,6 +321,9 @@ class WheelController {
     this.renderPuzzleGrid();
     this.renderScores();
     this.broadcastState();
+
+    this.activeSpinValue = 0;
+    if (this.spinValueTag) this.spinValueTag.textContent = '$0';
   }
 
   renderKeyboard() {

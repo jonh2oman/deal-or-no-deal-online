@@ -191,10 +191,25 @@ class JeopardyController {
     };
 
     this.soundFxBtns = document.querySelectorAll('.sound-fx-btn');
+    this.finalJeopardyBtn = document.getElementById('final-jeopardy-btn');
+    this.closeClueBtn = document.getElementById('close-clue-btn');
   }
 
   bindEvents() {
     this.elements.themeSelect.addEventListener('change', (e) => this.setTheme(e.target.value));
+
+    if (this.finalJeopardyBtn) this.finalJeopardyBtn.addEventListener('click', () => this.triggerFinalJeopardyMode());
+
+    if (this.closeClueBtn) {
+      this.closeClueBtn.addEventListener('click', () => {
+        if (this.state) this.state.activeClue = null;
+        this.activeClue = null;
+        if (this.elements.activeClueValueTag) this.elements.activeClueValueTag.textContent = 'SELECT A CLUE FROM THE BOARD';
+        if (this.elements.teleprompterClue) this.elements.teleprompterClue.textContent = 'Select any category dollar value ($200 - $1000) below to activate clue.';
+        if (this.elements.teleprompterAnswer) this.elements.teleprompterAnswer.textContent = 'Secret Answer: ---';
+        this.broadcastState();
+      });
+    }
 
     // CSV Import / Export
     const importCsvBtn = document.getElementById('import-csv-btn');
@@ -506,16 +521,27 @@ class JeopardyController {
       }
     });
 
-    const categories = Object.keys(newBoardMap).slice(0, 6);
+    const allCategories = Object.keys(newBoardMap);
+    if (allCategories.length > 6) {
+      alert(`Warning: Your CSV has ${allCategories.length} categories. Only the first 6 will be loaded.`);
+    }
+
+    const categories = allCategories.slice(0, 6);
     if (categories.length === 0) {
       alert("Could not parse valid categories from CSV. Please check formatting.");
       return;
     }
 
-    const newBoard = categories.map(catName => ({
-      category: catName,
-      clues: newBoardMap[catName].slice(0, 5)
-    }));
+    const newBoard = categories.map(catName => {
+      const clues = newBoardMap[catName];
+      if (clues.length > 5) {
+        console.warn('Extra clues truncated for category: ' + catName);
+      }
+      return {
+        category: catName,
+        clues: clues.slice(0, 5)
+      };
+    });
 
     this.board = newBoard;
     this.renderBoard();

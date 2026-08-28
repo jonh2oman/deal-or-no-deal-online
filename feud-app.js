@@ -71,7 +71,7 @@ const DEFAULT_BRANDING = {
 
 class FeudController {
   constructor() {
-    this.questions = JSON.parse(JSON.stringify(PRESET_FEUD_QUESTIONS));
+    this.questions = this.loadQuestions();
     this.activeQuestionIndex = 0;
     this.team1Name = "TEAM 1";
     this.team2Name = "TEAM 2";
@@ -80,6 +80,7 @@ class FeudController {
     this.roundBank = 0;
     this.multiplier = 1;
     this.strikes = 0;
+    this.fastMoneyActive = false;
     this.theme = "runway-blue";
     this.branding = this.loadBranding();
 
@@ -200,10 +201,15 @@ class FeudController {
     };
 
     this.soundFxBtns = document.querySelectorAll('.sound-fx-btn');
+    this.toggleFastMoneyBtn = document.getElementById('toggle-fast-money-btn');
   }
 
   bindEvents() {
     this.elements.themeSelect.addEventListener('change', (e) => this.setTheme(e.target.value));
+
+    if (this.toggleFastMoneyBtn) {
+      this.toggleFastMoneyBtn.addEventListener('click', () => this.toggleFastMoney());
+    }
 
     this.elements.spectatorBtn.addEventListener('click', () => {
       window.open('feud-spectator.html', 'FeudSpectatorWindow', 'width=1280,height=720');
@@ -565,10 +571,9 @@ class FeudController {
     this.elements.roundBankVal.textContent = this.roundBank;
   }
 
-  broadcastState() {
-    if (!this.broadcast) return;
+  buildState() {
     const q = this.questions[this.activeQuestionIndex];
-    const statePayload = {
+    return {
       branding: this.branding,
       theme: this.theme,
       team1Name: this.team1Name,
@@ -579,8 +584,22 @@ class FeudController {
       multiplier: this.multiplier,
       strikes: this.strikes,
       activeQuestion: q ? q.question : "",
-      answers: q ? q.answers : []
+      answers: q ? q.answers : [],
+      fastMoneyActive: this.fastMoneyActive
     };
+  }
+
+  toggleFastMoney() {
+    this.fastMoneyActive = !this.fastMoneyActive;
+    if (this.toggleFastMoneyBtn) {
+      this.toggleFastMoneyBtn.textContent = this.fastMoneyActive ? '🎤 Exit Fast Money' : '🎤 Fast Money Round';
+    }
+    this.broadcast.postMessage({ type: 'SYNC_FEUD_STATE', state: { ...this.buildState(), fastMoneyActive: this.fastMoneyActive } });
+  }
+
+  broadcastState() {
+    if (!this.broadcast) return;
+    const statePayload = this.buildState();
     try {
       localStorage.setItem('feud_last_state', JSON.stringify(statePayload));
     } catch (e) {}

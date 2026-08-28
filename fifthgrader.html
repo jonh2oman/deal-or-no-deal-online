@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Are You Smarter Than a 5th Grader? - Stage Host Control</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .fifth-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .chalkboard-grid {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+    }
+
+    .grade-subject-card {
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--glass-border);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .grade-subject-card.active {
+      background: #facc15;
+      color: #0f172a;
+      border-color: #fef08a;
+      box-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
+    }
+
+    .grade-subject-card.cleared {
+      opacity: 0.5;
+      text-decoration: line-through;
+      background: rgba(34, 197, 94, 0.2);
+      border-color: #22c55e;
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="stage-badge" id="brand-tag-code">
+          <span class="badge-text" id="brand-tag-text">5TH-GRADE-1</span>
+          <span class="badge-icon">🎓</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">ARE YOU SMARTER THAN A 5TH GRADER?</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Host Stage Controller</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+        </select>
+
+        <button id="qr-btn" class="tool-btn admin-highlight">
+          <span class="btn-icon">📱</span> <span class="btn-text">Mobile & QR</span>
+        </button>
+        <button id="spectator-btn" class="tool-btn">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn">
+          <span class="btn-icon" id="sound-icon">📺</span> <span class="btn-text" id="sound-text">PA Audio Only</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Classroom</span>
+        </button>
+      </div>
+
+      <!-- Integrated Header Soundboard Row -->
+      <div class="header-soundboard-row">
+        <span class="soundboard-row-label">🎵 STAGE SOUNDBOARD:</span>
+        <div class="soundboard-buttons-row">
+          <button class="sound-fx-btn btn-sm" data-sound="chime">🔔 Classroom Bell</button>
+          <button class="sound-fx-btn btn-sm" data-sound="daily">🎲 Correct Answer</button>
+          <button class="sound-fx-btn btn-sm" data-sound="buzzer">🚨 Drop Out Buzzer</button>
+          <button class="sound-fx-btn btn-sm" data-sound="win">🏆 $1,000,000 Win</button>
+          <button class="sound-fx-btn btn-sm" data-sound="theme">🎺 Theme Music</button>
+          <button class="sound-fx-btn btn-sm danger" data-sound="stop">🛑 Silence All</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="fifth-layout">
+      <!-- Left: 10 Subject Classroom Grid -->
+      <div class="chalkboard-grid" id="subject-grid">
+        <!-- 10 Subjects generated dynamically -->
+      </div>
+
+      <!-- Right: Question Box, Lifelines & Classmate -->
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Lifelines & Classmate Bar -->
+        <div class="header-glass" style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; gap: 8px;">
+            <button id="lifeline-peek" class="btn btn-secondary">👁️ PEEK</button>
+            <button id="lifeline-copy" class="btn btn-secondary">📋 COPY</button>
+            <button id="lifeline-save" class="btn btn-secondary">🛡️ SAVE</button>
+          </div>
+          <div>
+            <span style="font-size: 0.9rem; color: #cbd5e1;">Classmate Helper: </span>
+            <select id="classmate-select" class="input-field select-tool" style="max-width: 160px;">
+              <option value="ALEX">👦 Alex</option>
+              <option value="MAYA">👧 Maya</option>
+              <option value="LEO">👦 Leo</option>
+              <option value="ZOEY">👧 Zoey</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Question Box -->
+        <div class="header-glass" style="padding: 24px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="podium-status" id="active-subject-tag">1ST GRADE ANIMAL SCIENCE ($1,000)</div>
+            <h2 id="question-text" style="font-family: var(--font-display); font-size: 1.8rem; color: #ffffff; margin-top: 12px;">
+              What is the only mammal capable of true flight?
+            </h2>
+            <div id="answer-text" style="font-size: 1.3rem; color: #fef08a; font-weight: 800; margin-top: 10px;">
+              Secret Answer: What is a Bat?
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <button id="drop-out-btn" class="btn danger-light" style="font-size: 1.1rem; padding: 12px 20px;">
+              🚫 Drop Out ("I am NOT smarter!")
+            </button>
+            <div style="display: flex; gap: 8px;">
+              <button id="reveal-ans-btn" class="btn btn-secondary">👁️ Reveal Answer</button>
+              <button id="pass-subject-btn" class="btn btn-primary">✅ Correct (+Advance)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="peer-connection.js"></script>
+  <script src="audio.js"></script>
+  <script src="fifthgrader-app.js"></script>
+</body>
+</html>

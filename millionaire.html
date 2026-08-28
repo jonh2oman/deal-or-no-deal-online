@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who Wants to Be a Millionaire? - Stage Host Control</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .millionaire-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 16px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .question-console-glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .lifelines-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .lifeline-btn {
+      padding: 10px 18px;
+      border-radius: 30px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid var(--sky-blue);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lifeline-btn:hover:not(:disabled) {
+      background: var(--sky-blue);
+      color: #0f172a;
+      box-shadow: var(--shadow-neon);
+    }
+
+    .lifeline-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      border-color: #64748b;
+      text-decoration: line-through;
+    }
+
+    .question-box {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .opt-btn {
+      padding: 16px 20px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px solid var(--glass-border);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .opt-btn:hover {
+      border-color: var(--sky-blue);
+      background: rgba(56, 189, 248, 0.2);
+    }
+
+    .opt-btn.selected {
+      background: rgba(234, 179, 8, 0.3);
+      border-color: #facc15;
+      color: #fef08a;
+    }
+
+    .opt-btn.correct {
+      background: rgba(34, 197, 94, 0.4);
+      border-color: #22c55e;
+      color: #ffffff;
+    }
+
+    .opt-btn.hidden-opt {
+      visibility: hidden;
+    }
+
+    /* Money Ladder Sidebar */
+    .money-ladder-sidebar {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 4px;
+    }
+
+    .ladder-step {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #94a3b8;
+    }
+
+    .ladder-step.milestone {
+      color: #ffffff;
+    }
+
+    .ladder-step.active {
+      background: #facc15;
+      color: #0f172a;
+      box-shadow: 0 0 15px rgba(250, 204, 21, 0.5);
+    }
+  </style>
+</head>
+<body data-theme="runway-blue">
+  <div class="stage-spotlight-left"></div>
+  <div class="stage-spotlight-right"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-glass">
+      <div class="brand-group">
+        <div class="stage-badge" id="brand-tag-code">
+          <span class="badge-text" id="brand-tag-text">MILLION-1</span>
+          <span class="badge-icon">💡</span>
+        </div>
+        <div class="brand-titles">
+          <h1 id="brand-event-title">WHO WANTS TO BE A MILLIONAIRE?</h1>
+          <p class="subtitle" id="brand-event-subtitle">Official Host Stage Controller</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="toolbar">
+        <select id="theme-select" class="tool-btn select-tool">
+          <option value="runway-blue">✈️ Runway Blue</option>
+          <option value="golden-sunset">🌅 Golden Sunset</option>
+          <option value="night-radar">📡 Night Radar</option>
+          <option value="crimson-vip">🍷 Crimson VIP</option>
+          <option value="neon-cyber">🔮 Neon Cyberpunk</option>
+          <option value="emerald-gala">💎 Emerald Gala</option>
+          <option value="midnight-amethyst">🌌 Midnight Amethyst</option>
+        </select>
+
+        <button id="qr-btn" class="tool-btn admin-highlight">
+          <span class="btn-icon">📱</span> <span class="btn-text">Mobile & QR</span>
+        </button>
+        <button id="spectator-btn" class="tool-btn">
+          <span class="btn-icon">📺</span> <span class="btn-text">Spectator Mode</span>
+        </button>
+        <button id="sound-btn" class="tool-btn">
+          <span class="btn-icon" id="sound-icon">📺</span> <span class="btn-text" id="sound-text">PA Audio Only</span>
+        </button>
+        <button id="reset-btn" class="tool-btn danger-light">
+          <span class="btn-icon">🔄</span> <span class="btn-text">Reset Game</span>
+        </button>
+      </div>
+
+      <!-- Integrated Header Soundboard Row -->
+      <div class="header-soundboard-row">
+        <span class="soundboard-row-label">🎵 STAGE SOUNDBOARD:</span>
+        <div class="soundboard-buttons-row">
+          <button class="sound-fx-btn btn-sm" data-sound="chime">🔔 Lock Answer</button>
+          <button class="sound-fx-btn btn-sm" data-sound="daily">🎲 Tension Sound</button>
+          <button class="sound-fx-btn btn-sm" data-sound="buzzer">🚨 Wrong Answer</button>
+          <button class="sound-fx-btn btn-sm" data-sound="win">🏆 Correct Answer</button>
+          <button class="sound-fx-btn btn-sm" data-sound="theme">🎺 Stage Theme</button>
+          <button class="sound-fx-btn btn-sm danger" data-sound="stop">🛑 Silence All</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="millionaire-layout">
+      <!-- Left Question Console -->
+      <div class="question-console-glass">
+        <!-- Lifelines Row -->
+        <div class="lifelines-row">
+          <button id="lifeline-5050" class="lifeline-btn">🌓 50 : 50</button>
+          <button id="lifeline-audience" class="lifeline-btn">👥 Ask Audience</button>
+          <button id="lifeline-phone" class="lifeline-btn">📞 Phone Friend</button>
+        </div>
+
+        <!-- Question Text Box -->
+        <div class="question-box" id="question-text">
+          Loading question 1 for $100...
+        </div>
+
+        <!-- Options A, B, C, D -->
+        <div class="options-grid">
+          <button class="opt-btn" id="opt-a" onclick="millApp.selectOption('A')">A: Option A</button>
+          <button class="opt-btn" id="opt-b" onclick="millApp.selectOption('B')">B: Option B</button>
+          <button class="opt-btn" id="opt-c" onclick="millApp.selectOption('C')">C: Option C</button>
+          <button class="opt-btn" id="opt-d" onclick="millApp.selectOption('D')">D: Option D</button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 12px;">
+          <span style="color: #cbd5e1; font-size: 0.95rem;">Host Control:</span>
+          <div style="display: flex; gap: 8px;">
+            <button id="lock-answer-btn" class="btn btn-primary">🔒 Final Answer</button>
+            <button id="reveal-correct-btn" class="btn btn-secondary">👁️ Reveal Correct</button>
+            <button id="next-question-btn" class="btn btn-primary">⏩ Next Question</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Money Ladder Sidebar -->
+      <div class="money-ladder-sidebar" id="money-ladder">
+        <!-- 15 Steps generated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="peer-connection.js"></script>
+  <script src="audio.js"></script>
+  <script src="millionaire-app.js"></script>
+</body>
+</html>

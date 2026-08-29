@@ -240,12 +240,12 @@ class SpectatorController {
         // Holding screen until host pushes the offer
         if (this.elements.offerLabelHeading) this.elements.offerLabelHeading.textContent = "INCOMING OFFER";
         if (this.elements.offerTypeBadge) this.elements.offerTypeBadge.textContent = "TRANSMISSION IN PROGRESS";
-        if (this.elements.bankerTitleHeading) this.elements.bankerTitleHeading.textContent = "FLIGHT CONTROL CALLING...";
+        if (this.elements.bankerTitleHeading) this.elements.bankerTitleHeading.textContent = "BANKER CALLING...";
         if (this.elements.bankerOfferCard) this.elements.bankerOfferCard.classList.remove('custom-host-card');
         if (this.elements.bankerPhysicalDisplay) this.elements.bankerPhysicalDisplay.classList.add('hidden');
 
         this.elements.bankerOfferDisplay.textContent = "OFFER INCOMING...";
-        this.elements.bankerEvMeta.textContent = "Flight control is preparing a deal offer for the contestant!";
+        this.elements.bankerEvMeta.textContent = "The Banker is preparing a deal offer for the contestant!";
       } else {
         // Offer is live!
         if (state.currentOffer.isCustom) {
@@ -263,7 +263,7 @@ class SpectatorController {
         } else {
           if (this.elements.offerLabelHeading) this.elements.offerLabelHeading.textContent = "BANKER OFFER";
           if (this.elements.offerTypeBadge) this.elements.offerTypeBadge.textContent = "INCOMING TRANSMISSION";
-          if (this.elements.bankerTitleHeading) this.elements.bankerTitleHeading.textContent = "FLIGHT CONTROL CALLING...";
+          if (this.elements.bankerTitleHeading) this.elements.bankerTitleHeading.textContent = "BANKER CALLING...";
           if (this.elements.bankerOfferCard) this.elements.bankerOfferCard.classList.remove('custom-host-card');
           if (this.elements.bankerPhysicalDisplay) this.elements.bankerPhysicalDisplay.classList.add('hidden');
         }
